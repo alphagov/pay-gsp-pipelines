@@ -1,7 +1,7 @@
 # TO DO
 
 - Create build pipelines for
-	- pay-cardid [DONE]
+	- pay-cardid
 	- pay-toolbox
 	- pay-connector
 	- pay-ledger

@@ -1,0 +1,281 @@
+---
+apiVersion: concourse.k8s.io/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: build-release
+spec:
+  exposed: true
+  pipelineString: |
+
+    github_source: &github_source
+      uri: https://github.com/alphagov/pay-cardid.git
+      organization: alphagov
+      owner: alphagov
+      repository: pay-cardid
+      github_api_token: ((github.api-token))
+      access_token: ((github.api-token))
+      approvers: ((trusted-developers.github-accounts))
+      required_approval_count: 2
+      commit_verification_keys: ((trusted-developers.gpg-keys))
+
+    harbor_source: &harbor_source
+      username: ((harbor.harbor_username))
+      password: ((harbor.harbor_password))
+      harbor:
+        url: ((harbor.harbor_url))
+        prevent_vul: "false"
+      notary:
+        url: ((harbor.notary_url))
+        root_key: ((harbor.root_key))
+        delegate_key: ((harbor.ci_key))
+        passphrase:
+          root: ((harbor.notary_root_passphrase))
+          snapshot: ((harbor.notary_snapshot_passphrase))
+          targets: ((harbor.notary_targets_passphrase))
+          delegation: ((harbor.notary_delegation_passphrase))
+
+    groups:
+
+    - name: build
+      jobs:
+        - build-pay-cardid
+        - build-pay-toolbox
+        - build-pay-connector
+        - build-pay-ledger
+        - build-pay-products
+        - build-pay-direct-debit-connector
+        - build-pay-direct-debit-frontend
+
+    - name: deploy-to-staging
+      jobs: 
+        - deploy-staging-pay-cardid
+        - deploy-staging-pay-toolbox
+        - deploy-staging-pay-connector
+        - deploy-staging-pay-ledger
+        - deploy-staging-pay-products
+        - deploy-staging-pay-direct-debit-connector
+        - deploy-staging-pay-direct-debit-frontend
+
+
+    - name: test-in-staging
+      jobs:
+        - test-staging-pay-cardid
+        - test-staging-pay-toolbox
+        - test-staging-pay-connector
+        - test-staging-pay-ledger
+        - test-staging-pay-products
+        - test-staging-pay-direct-debit-connector
+        - test-staging-pay-direct-debit-frontend
+
+
+    - name: deploy-to-production
+      jobs:
+        - deploy-pay-cardid
+        - deploy-pay-toolbox
+        - deploy-pay-connector
+        - deploy-pay-ledger
+        - deploy-pay-products
+        - deploy-pay-direct-debit-connector
+        - deploy-pay-direct-debit-frontend
+
+
+    - name: smoke-test-production
+      jobs:
+        - smoke-test-pay-cardid
+        - smoke-test-pay-toolbox
+        - smoke-test-pay-connector
+        - smoke-test-pay-ledger
+        - smoke-test-pay-products
+        - smoke-test-pay-direct-debit-connector
+        - smoke-test-pay-direct-debit-frontend
+
+
+    resource_types:
+
+    - name: github
+      type: registry-image
+      source:
+        repository: "govsvc/concourse-github-resource"
+        tag: "v0.0.1"
+
+    - name: harbor
+      type: docker-image
+      privileged: true
+      source:
+        repository: govsvc/gsp-harbor-docker-image-resource
+        tag: "0.0.1553882420"
+
+
+    resources:
+
+      - name: pay-cardid-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-cardid
+          branch: master
+
+      - name: pay-cardid-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/cardid
+
+    jobs:
+
+    - name: build-pay-cardid
+      public: true
+      serial: true
+      plan:
+      - get: pay-cardid-src
+        trigger: true
+
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: https://github.com/alphagov/pay-cardid
+              tag: latest
+          inputs:
+          - name: pay-cardid-src
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              [run some tests]
+
+      - put: pay-cardid-image
+        params:
+          tag_as_latest: true
+
+    - name: deploy-staging-pay-cardid
+      public: true
+      serial: true
+      plan:
+      - get: pay-cardid-image
+        passed: ['build-pay-cardid']
+        trigger: true
+
+      - task: deploy-to-staging
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: https://github.com/alphagov/pay-cardid
+              tag: latest
+          inputs:
+          - name: pay-cardid-image
+          params: 
+            KUBERNETES_SERVICE_ACCOUNT: ((namespace-deployer))
+            KUBERNETES_TOKEN: ((namespace-deployer.token))
+            KUBERNETES_API: kubernetes.default.svc
+            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+            RELEASE_NAME: staging
+            APP_NAME: pay-cardid
+          run:
+            path: /bin/bash
+              args:
+              - -eu
+              - -c
+              - |
+                echo "Configuring kubectl"
+                echo "${KUBERNETES_SERVICE_ACCOUNT}" | jq -r .["ca.crt"] > ca.crt
+                kubectl config set-cluster self --server=https://kubernetes.default --certificate-authority=ca.crt
+                kubectl config set-credentials deployer --token "${KUBERNETES_TOKEN}"
+                kubectl config set-context deployer --user deployer --cluster self
+                kubectl config use-context deployer
+                echo "Applying chart to ${RELEASE_NAMESPACE} namespace..."
+                kapp deploy \
+                  -y \
+                  --namespace "${RELEASE_NAMESPACE}" \
+                  --allow-ns "${RELEASE_NAMESPACE}" \
+                  --app "${RELEASE_NAME}-${APP_NAME}" \
+                  --diff-changes \
+                  -f ./pay-cardid-image/
+
+
+    - name: test-staging-pay-cardid
+      image: tests-image
+      attempts: 2
+      timeout: 15m
+      config:
+        platform: linux
+        params:
+          # PROXY_NODE_URL: "https://test-proxy-node.((cluster.domain))"
+          # STUB_CONNECTOR_URL: "https://test-connector.((cluster.domain))"
+          # STUB_IDP_USER: "stub-idp-demo-one"
+          # SELENIUM_HUB_URL: "https://selenium.tools.signin.service.gov.uk/wd/hub"
+        run:
+          path: /bin/bash
+          args:
+          - -c
+          - |
+            set -euo pipefail
+            cd /
+            bundle exec cucumber --strict --tags "not @ignore"
+
+    - name: deploy-production-pay-cardid
+      public: true
+      serial: true
+      plan:
+      - get: pay-cardid-image
+        passed: ['build-pay-cardid']
+        trigger: true
+
+      - task: deploy-to-staging
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: https://github.com/alphagov/pay-cardid
+              tag: latest
+          inputs:
+          - name: pay-cardid-image
+          params: 
+            KUBERNETES_SERVICE_ACCOUNT: ((namespace-deployer))
+            KUBERNETES_TOKEN: ((namespace-deployer.token))
+            KUBERNETES_API: kubernetes.default.svc
+            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+            RELEASE_NAME: staging
+            APP_NAME: pay-cardid
+          run:
+            path: /bin/bash
+              args:
+              - -eu
+              - -c
+              - |
+                echo "Configuring kubectl"
+                echo "${KUBERNETES_SERVICE_ACCOUNT}" | jq -r .["ca.crt"] > ca.crt
+                kubectl config set-cluster self --server=https://kubernetes.default --certificate-authority=ca.crt
+                kubectl config set-credentials deployer --token "${KUBERNETES_TOKEN}"
+                kubectl config set-context deployer --user deployer --cluster self
+                kubectl config use-context deployer
+                echo "Applying chart to ${RELEASE_NAMESPACE} namespace..."
+                kapp deploy \
+                  -y \
+                  --namespace "${RELEASE_NAMESPACE}" \
+                  --allow-ns "${RELEASE_NAMESPACE}" \
+                  --app "${RELEASE_NAME}-${APP_NAME}" \
+                  --diff-changes \
+                  -f ./pay-cardid-image/
+
+
+
+    - name: smoke-test-pay-cardid
+
+
+
+
+
+
+
+
+
+
