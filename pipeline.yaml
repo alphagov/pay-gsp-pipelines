@@ -7,7 +7,7 @@ metadata:
   name: build-release
 spec:
   exposed: true
-  pipelineString: |
+#  pipelineString: |
 
     github_source: &github_source
       uri: https://github.com/alphagov/pay-cardid.git
@@ -38,58 +38,18 @@ spec:
 
     groups:
 
-    - name: build
+    - name: release
       jobs:
-        - build-pay-cardid
-        - build-pay-toolbox
-        - build-pay-connector
-        - build-pay-ledger
-        - build-pay-products
-        - build-pay-direct-debit-connector
-        - build-pay-direct-debit-frontend
+        - build
+        - deploy-to-staging
+        - test-in-staging
+        - deploy-to-production
 
-    - name: deploy-to-staging
-      jobs: 
-        - deploy-staging-pay-cardid
-        - deploy-staging-pay-toolbox
-        - deploy-staging-pay-connector
-        - deploy-staging-pay-ledger
-        - deploy-staging-pay-products
-        - deploy-staging-pay-direct-debit-connector
-        - deploy-staging-pay-direct-debit-frontend
-
-
-    - name: test-in-staging
+    - name: smoke-tests
       jobs:
-        - test-staging-pay-cardid
-        - test-staging-pay-toolbox
-        - test-staging-pay-connector
-        - test-staging-pay-ledger
-        - test-staging-pay-products
-        - test-staging-pay-direct-debit-connector
-        - test-staging-pay-direct-debit-frontend
-
-
-    - name: deploy-to-production
-      jobs:
-        - deploy-pay-cardid
-        - deploy-pay-toolbox
-        - deploy-pay-connector
-        - deploy-pay-ledger
-        - deploy-pay-products
-        - deploy-pay-direct-debit-connector
-        - deploy-pay-direct-debit-frontend
-
-
-    - name: smoke-test-production
-      jobs:
-        - smoke-test-pay-cardid
-        - smoke-test-pay-toolbox
-        - smoke-test-pay-connector
-        - smoke-test-pay-ledger
-        - smoke-test-pay-products
-        - smoke-test-pay-direct-debit-connector
-        - smoke-test-pay-direct-debit-frontend
+        - run-card-tests
+        - run-directdebit-tests
+        - run-products-tests
 
 
     resource_types:
@@ -97,15 +57,15 @@ spec:
     - name: github
       type: registry-image
       source:
-        repository: "govsvc/concourse-github-resource"
-        tag: "v0.0.1"
+        repository: govsvc/concourse-github-resource
+        tag: "gsp-v1.1.11"
 
     - name: harbor
       type: docker-image
       privileged: true
       source:
         repository: govsvc/gsp-harbor-docker-image-resource
-        tag: "0.0.1553882420"
+        tag: "gsp-v1.1.11"
 
 
     resources:
@@ -123,40 +83,363 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/cardid
 
+      - name: pay-toolbox-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-toolbox
+          branch: master
+
+      - name: pay-toolbox-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/toolbox
+
+      - name: pay-connector-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-connector
+          branch: master
+
+      - name: pay-connector-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/connector
+
+      - name: pay-ledger-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-ledger
+          branch: master
+
+      - name: pay-ledger-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/ledger
+
+      - name: pay-products-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-products
+          branch: master
+
+      - name: pay-products-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products
+
+      - name: pay-direct-debit-connector-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-direct-debit-connector
+          branch: master
+
+      - name: pay-direct-debit-connector-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/direct-debit-connector
+
+      - name: pay-direct-debit-frontend-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-direct-debit-frontend
+          branch: master
+
+      - name: pay-direct-debit-frontend-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/direct-debit-frontend
+
+      - name: pay-endtoend-git
+          type: git
+          source:
+            uri: https://github.com/alphagov/pay-endtoend
+            branch: master
+            username: ((gh-readonly-username))
+            password: ((gh-readonly-password))
+
+
     jobs:
 
-    - name: build-pay-cardid
-      public: true
+    - name: build
       serial: true
       plan:
+
       - get: pay-cardid-src
         trigger: true
+      - get: pay-toolbox-src
+        trigger: true
+      - get: pay-connector-src
+        trigger: true
+      - get: pay-ledger-src
+        trigger: true
+      - get: pay-products-src
+        trigger: true
+      - get: pay-direct-debit-connector-src
+        trigger: true
+      - get: pay-direct-debit-frontend-src
+        trigger: true
 
-      - task: test
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-cardid-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-cardid-src
+                mvn test
+
+        - put: pay-cardid-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-toolbox-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-toolbox-src
+                mvn test
+
+        - put: pay-toolbox-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-connector-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-connector-src
+                mvn test
+
+        - put: pay-connector-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-ledger-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-ledger-src
+                mvn test
+
+        - put: pay-ledger-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-products-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-products-src
+                mvn test
+
+        - put: pay-products-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-direct-debit-connector-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-direct-debit-connector-src
+                mvn test
+
+        - put: pay-direct-debit-connector-image
+          params:
+            tag_as_latest: true
+
+      - aggregate:
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+            - name: pay-direct-debit-frontend-src
+            run:
+              path: bash
+              args:
+              - -c
+              - |
+                cd pay-direct-debit-frontend-src
+                mvn test
+
+        - put: pay-direct-debit-frontend-image
+          params:
+            tag_as_latest: true
+
+
+    - name: deploy-to-staging
+      serial: true
+      plan:
+      # FIXME
+      - get: pay-cardid-image
+        passed: ['build-pay-cardid']
+        trigger: true
+
+      - task: deploy-to-staging
         config:
           platform: linux
           image_resource:
             type: docker-image
             source:
-              repository: https://github.com/alphagov/pay-cardid
-              tag: latest
+              repository: govsvc/task_toolbox
+              tag: gsp-v1.1.11
           inputs:
-          - name: pay-cardid-src
+          - name: pay-cardid-image
+          params:
+            CLUSTER_NAME: ((cluster.name))
+            CLUSTER_DOMAIN: ((cluster.domain))
+            CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
+            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+            RELEASE_NAME: staging
           run:
-            path: bash
+            path: /bin/bash
             args:
+            - -eu
             - -c
             - |
-              [run some tests]
+              echo "Generating helm values for latest image versions..."
+              mkdir -p chart-values
+              cat << EOF > ./overrides.yaml
+              cardid:
+                image:
+                  repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
+                  tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
+              EOF
+              echo "Merging with chart values..."
+              spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
+              helm template \
+                --name "${RELEASE_NAME}" \
+                --namespace "${RELEASE_NAMESPACE}" \
+                --set "global.cluster.name=${CLUSTER_NAME}" \
+                --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
 
-      - put: pay-cardid-image
-        params:
-          tag_as_latest: true
 
-    - name: deploy-staging-pay-cardid
-      public: true
+    - name: test-in-staging
       serial: true
       plan:
+      - get: every-10m
+        trigger: true
+      - get: pay-endtoend-git
+
+      - aggregate:
+        - task: run-card-tests
+          file: pay-endtoend-git/ci/tasks/run-tests.yml
+          input_mapping: { repo: pay-endtoend-git }
+          params:
+            # FIXME
+            CF_SPACE: alpha
+            TEST_PROFILE: end2end
+            EXTRA_MVN_ARGS: "-Dit.test=!uk.gov.pay.endtoend.tests.publicapi.PaymentAndRefundIT"
+
+        - task: run-directdebit-tests
+          file: pay-endtoend-git/ci/tasks/run-tests.yml
+          input_mapping: { repo: pay-endtoend-git }
+          params:
+            # FIXME
+            CF_SPACE: beta
+            TEST_PROFILE: end2end-tagged
+            GROUPS: uk.gov.pay.endtoend.categories.End2EndDirectDebit
+
+        - task: run-product-tests
+          file: pay-endtoend-git/ci/tasks/run-tests.yml
+          input_mapping: { repo: pay-endtoend-git }
+          params:
+            # FIXME
+            CF_SPACE: gamma
+            TEST_PROFILE: end2end-tagged
+            GROUPS: uk.gov.pay.endtoend.categories.End2EndProducts
+
+
+    - name: deploy-to-production
+      serial: true
+      plan:
+      # FIXME
       - get: pay-cardid-image
         passed: ['build-pay-cardid']
         trigger: true
@@ -167,108 +450,40 @@ spec:
           image_resource:
             type: docker-image
             source:
-              repository: https://github.com/alphagov/pay-cardid
-              tag: latest
+              repository: govsvc/task_toolbox
+              tag: gsp-v1.1.11
           inputs:
           - name: pay-cardid-image
-          params: 
-            KUBERNETES_SERVICE_ACCOUNT: ((namespace-deployer))
-            KUBERNETES_TOKEN: ((namespace-deployer.token))
-            KUBERNETES_API: kubernetes.default.svc
+          params:
+            CLUSTER_NAME: ((cluster.name))
+            CLUSTER_DOMAIN: ((cluster.domain))
+            CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
             RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-            RELEASE_NAME: staging
-            APP_NAME: pay-cardid
+            RELEASE_NAME: production
           run:
             path: /bin/bash
-              args:
-              - -eu
-              - -c
-              - |
-                echo "Configuring kubectl"
-                echo "${KUBERNETES_SERVICE_ACCOUNT}" | jq -r .["ca.crt"] > ca.crt
-                kubectl config set-cluster self --server=https://kubernetes.default --certificate-authority=ca.crt
-                kubectl config set-credentials deployer --token "${KUBERNETES_TOKEN}"
-                kubectl config set-context deployer --user deployer --cluster self
-                kubectl config use-context deployer
-                echo "Applying chart to ${RELEASE_NAMESPACE} namespace..."
-                kapp deploy \
-                  -y \
-                  --namespace "${RELEASE_NAMESPACE}" \
-                  --allow-ns "${RELEASE_NAMESPACE}" \
-                  --app "${RELEASE_NAME}-${APP_NAME}" \
-                  --diff-changes \
-                  -f ./pay-cardid-image/
+            args:
+            - -eu
+            - -c
+            - |
+              echo "Generating helm values for latest image versions..."
+              mkdir -p chart-values
+              cat << EOF > ./overrides.yaml
+              esp:
+                image:
+                  repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
+                  tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
+              EOF
+              echo "Merging with chart values..."
+              spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
+              helm template \
+                --name "${RELEASE_NAME}" \
+                --namespace "${RELEASE_NAMESPACE}" \
+                --set "global.cluster.name=${CLUSTER_NAME}" \
+                --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
 
 
-    - name: test-staging-pay-cardid
-      image: tests-image
-      attempts: 2
-      timeout: 15m
-      config:
-        platform: linux
-        params:
-          # PROXY_NODE_URL: "https://test-proxy-node.((cluster.domain))"
-          # STUB_CONNECTOR_URL: "https://test-connector.((cluster.domain))"
-          # STUB_IDP_USER: "stub-idp-demo-one"
-          # SELENIUM_HUB_URL: "https://selenium.tools.signin.service.gov.uk/wd/hub"
-        run:
-          path: /bin/bash
-          args:
-          - -c
-          - |
-            set -euo pipefail
-            cd /
-            bundle exec cucumber --strict --tags "not @ignore"
-
-    - name: deploy-production-pay-cardid
-      public: true
-      serial: true
-      plan:
-      - get: pay-cardid-image
-        passed: ['build-pay-cardid']
-        trigger: true
-
-      - task: deploy-to-staging
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: https://github.com/alphagov/pay-cardid
-              tag: latest
-          inputs:
-          - name: pay-cardid-image
-          params: 
-            KUBERNETES_SERVICE_ACCOUNT: ((namespace-deployer))
-            KUBERNETES_TOKEN: ((namespace-deployer.token))
-            KUBERNETES_API: kubernetes.default.svc
-            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-            RELEASE_NAME: staging
-            APP_NAME: pay-cardid
-          run:
-            path: /bin/bash
-              args:
-              - -eu
-              - -c
-              - |
-                echo "Configuring kubectl"
-                echo "${KUBERNETES_SERVICE_ACCOUNT}" | jq -r .["ca.crt"] > ca.crt
-                kubectl config set-cluster self --server=https://kubernetes.default --certificate-authority=ca.crt
-                kubectl config set-credentials deployer --token "${KUBERNETES_TOKEN}"
-                kubectl config set-context deployer --user deployer --cluster self
-                kubectl config use-context deployer
-                echo "Applying chart to ${RELEASE_NAMESPACE} namespace..."
-                kapp deploy \
-                  -y \
-                  --namespace "${RELEASE_NAMESPACE}" \
-                  --allow-ns "${RELEASE_NAMESPACE}" \
-                  --app "${RELEASE_NAME}-${APP_NAME}" \
-                  --diff-changes \
-                  -f ./pay-cardid-image/
-
-
-
-    - name: smoke-test-pay-cardid
+    - name: smoke-tests
 
 
 
