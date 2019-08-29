@@ -7,18 +7,7 @@ metadata:
   name: build-release
 spec:
   exposed: true
-#  pipelineString: |
-
-    github_source: &github_source
-      uri: https://github.com/alphagov/pay-cardid.git
-      organization: alphagov
-      owner: alphagov
-      repository: pay-cardid
-      github_api_token: ((github.api-token))
-      access_token: ((github.api-token))
-      approvers: ((trusted-developers.github-accounts))
-      required_approval_count: 2
-      commit_verification_keys: ((trusted-developers.gpg-keys))
+  pipelineString: |
 
     harbor_source: &harbor_source
       username: ((harbor.harbor_username))
@@ -61,7 +50,7 @@ spec:
         tag: "gsp-v1.1.11"
 
     - name: harbor
-      type: docker-image
+      type: registry-image
       privileged: true
       source:
         repository: govsvc/gsp-harbor-docker-image-resource
@@ -166,8 +155,8 @@ spec:
           source:
             uri: https://github.com/alphagov/pay-endtoend
             branch: master
-            username: ((gh-readonly-username))
-            password: ((gh-readonly-password))
+            username: ((gh-readonly.username))
+            password: ((gh-readonly.password))
 
 
     jobs:
