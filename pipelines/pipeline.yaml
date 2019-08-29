@@ -65,6 +65,8 @@ spec:
         source:
           uri: https://github.com/alphagov/pay-cardid
           branch: master
+          username: ((gh-readonly.username))
+          password: ((gh-readonly.password))
 
       - name: pay-cardid-image
         type: harbor
