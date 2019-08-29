@@ -145,12 +145,12 @@ spec:
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
       - name: pay-endtoend-src
-          type: git
-          source:
-            uri: https://github.com/alphagov/pay-endtoend
-            branch: master
-            username: ((gh-readonly.username))
-            password: ((gh-readonly.password))
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-endtoend
+          branch: master
+          username: ((gh-readonly.username))
+          password: ((gh-readonly.password))
 
 
     jobs:
