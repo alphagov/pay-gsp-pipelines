@@ -26,38 +26,32 @@ spec:
           delegation: ((harbor.notary_delegation_passphrase))
 
     groups:
-
-    - name: release
-      jobs:
-        - build
-        - deploy-to-staging
-        - test-in-staging
-        - deploy-to-production
-
-    - name: smoke-tests
-      jobs:
-        - run-card-tests
-        - run-directdebit-tests
-        - run-products-tests
-
+      - name: build
+        jobs:
+          - build-cardid
 
     resource_types:
+      - name: github
+        type: registry-image
+        source:
+          repository: govsvc/concourse-github-resource
+          tag: "gsp-v1.1.11"
 
-    - name: github
-      type: registry-image
-      source:
-        repository: govsvc/concourse-github-resource
-        tag: "gsp-v1.1.11"
-
-    - name: harbor
-      type: registry-image
-      privileged: true
-      source:
-        repository: govsvc/gsp-harbor-docker-image-resource
-        tag: "gsp-v1.1.11"
-
+      - name: harbor
+        type: registry-image
+        privileged: true
+        source:
+          repository: govsvc/gsp-harbor-docker-image-resource
+          tag: "gsp-v1.1.11"
 
     resources:
+      - name: pipelines
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-gsp-pipelines
+          branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
 
       - name: pay-cardid-src
         type: git
@@ -150,7 +144,7 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
-      - name: pay-endtoend-git
+      - name: pay-endtoend-src
           type: git
           source:
             uri: https://github.com/alphagov/pay-endtoend
@@ -160,326 +154,209 @@ spec:
 
 
     jobs:
-
-    - name: build
-      serial: true
-      plan:
-
-      - get: pay-cardid-src
-        trigger: true
-      - get: pay-toolbox-src
-        trigger: true
-      - get: pay-connector-src
-        trigger: true
-      - get: pay-ledger-src
-        trigger: true
-      - get: pay-products-src
-        trigger: true
-      - get: pay-direct-debit-connector-src
-        trigger: true
-      - get: pay-direct-debit-frontend-src
-        trigger: true
-
-      - aggregate:
+      - name: build-cardid
+        plan:
+        - get: pipelines
+        - get: pay-cardid-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-cardid-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-cardid-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-cardid-src }
         - put: pay-cardid-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-toolbox
+        plan:
+        - get: pipelines
+        - get: pay-toolbox-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-toolbox-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-toolbox-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-toolbox-src }
         - put: pay-toolbox-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-connector
+        plan:
+        - get: pipelines
+        - get: pay-connector-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-connector-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-connector-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-connector-src }
         - put: pay-connector-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-ledger
+        plan:
+        - get: pipelines
+        - get: pay-ledger-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-ledger-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-ledger-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-ledger-src }
         - put: pay-ledger-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-products
+        plan:
+        - get: pipelines
+        - get: pay-products-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-products-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-products-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-products-src }
         - put: pay-products-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-direct-debit-connector
+        plan:
+        - get: pipelines
+        - get: pay-direct-debit-connector-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-direct-debit-connector-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-direct-debit-connector-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-direct-debit-connector-src }
         - put: pay-direct-debit-connector-image
           params:
             tag_as_latest: true
 
-      - aggregate:
+      - name: build-direct-debit-frontend
+        plan:
+        - get: pipelines
+        - get: pay-direct-debit-frontend-src
+          trigger: true
         - task: test
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
-            inputs:
-            - name: pay-direct-debit-frontend-src
-            run:
-              path: bash
-              args:
-              - -c
-              - |
-                cd pay-direct-debit-frontend-src
-                mvn test
-
+          file: pipelines/tasks/maven-test.yaml
+          input_mapping: { src: pay-direct-debit-frontend-src }
         - put: pay-direct-debit-frontend-image
           params:
             tag_as_latest: true
 
+          #- name: deploy-to-staging
+          #  serial: true
+          #  plan:
+          #  # FIXME
+          #  - get: pay-cardid-image
+          #    passed: ['build-pay-cardid']
+          #    trigger: true
 
-    - name: deploy-to-staging
-      serial: true
-      plan:
-      # FIXME
-      - get: pay-cardid-image
-        passed: ['build-pay-cardid']
-        trigger: true
-
-      - task: deploy-to-staging
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: govsvc/task_toolbox
-              tag: gsp-v1.1.11
-          inputs:
-          - name: pay-cardid-image
-          params:
-            CLUSTER_NAME: ((cluster.name))
-            CLUSTER_DOMAIN: ((cluster.domain))
-            CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
-            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-            RELEASE_NAME: staging
-          run:
-            path: /bin/bash
-            args:
-            - -eu
-            - -c
-            - |
-              echo "Generating helm values for latest image versions..."
-              mkdir -p chart-values
-              cat << EOF > ./overrides.yaml
-              cardid:
-                image:
-                  repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
-                  tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
-              EOF
-              echo "Merging with chart values..."
-              spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
-              helm template \
-                --name "${RELEASE_NAME}" \
-                --namespace "${RELEASE_NAMESPACE}" \
-                --set "global.cluster.name=${CLUSTER_NAME}" \
-                --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
-
-
-    - name: test-in-staging
-      serial: true
-      plan:
-      - get: every-10m
-        trigger: true
-      - get: pay-endtoend-git
-
-      - aggregate:
-        - task: run-card-tests
-          file: pay-endtoend-git/ci/tasks/run-tests.yml
-          input_mapping: { repo: pay-endtoend-git }
-          params:
-            # FIXME
-            CF_SPACE: alpha
-            TEST_PROFILE: end2end
-            EXTRA_MVN_ARGS: "-Dit.test=!uk.gov.pay.endtoend.tests.publicapi.PaymentAndRefundIT"
-
-        - task: run-directdebit-tests
-          file: pay-endtoend-git/ci/tasks/run-tests.yml
-          input_mapping: { repo: pay-endtoend-git }
-          params:
-            # FIXME
-            CF_SPACE: beta
-            TEST_PROFILE: end2end-tagged
-            GROUPS: uk.gov.pay.endtoend.categories.End2EndDirectDebit
-
-        - task: run-product-tests
-          file: pay-endtoend-git/ci/tasks/run-tests.yml
-          input_mapping: { repo: pay-endtoend-git }
-          params:
-            # FIXME
-            CF_SPACE: gamma
-            TEST_PROFILE: end2end-tagged
-            GROUPS: uk.gov.pay.endtoend.categories.End2EndProducts
+          #  - task: deploy-to-staging
+          #    config:
+          #      platform: linux
+          #      image_resource:
+          #        type: docker-image
+          #        source:
+          #          repository: govsvc/task_toolbox
+          #          tag: gsp-v1.1.11
+          #      inputs:
+          #      - name: pay-cardid-image
+          #      params:
+          #        CLUSTER_NAME: ((cluster.name))
+          #        CLUSTER_DOMAIN: ((cluster.domain))
+          #        CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
+          #        RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+          #        RELEASE_NAME: staging
+          #      run:
+          #        path: /bin/bash
+          #        args:
+          #        - -eu
+          #        - -c
+          #        - |
+          #          echo "Generating helm values for latest image versions..."
+          #          mkdir -p chart-values
+          #          cat << EOF > ./overrides.yaml
+          #          cardid:
+          #            image:
+          #              repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
+          #              tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
+          #          EOF
+          #          echo "Merging with chart values..."
+          #          spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
+          #          helm template \
+          #            --name "${RELEASE_NAME}" \
+          #            --namespace "${RELEASE_NAMESPACE}" \
+          #            --set "global.cluster.name=${CLUSTER_NAME}" \
+          #            --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
 
 
-    - name: deploy-to-production
-      serial: true
-      plan:
-      # FIXME
-      - get: pay-cardid-image
-        passed: ['build-pay-cardid']
-        trigger: true
+          #- name: test-in-staging
+          #  serial: true
+          #  plan:
+          #  - get: every-10m
+          #    trigger: true
+          #  - get: pay-endtoend-src
 
-      - task: deploy-to-staging
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: govsvc/task_toolbox
-              tag: gsp-v1.1.11
-          inputs:
-          - name: pay-cardid-image
-          params:
-            CLUSTER_NAME: ((cluster.name))
-            CLUSTER_DOMAIN: ((cluster.domain))
-            CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
-            RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-            RELEASE_NAME: production
-          run:
-            path: /bin/bash
-            args:
-            - -eu
-            - -c
-            - |
-              echo "Generating helm values for latest image versions..."
-              mkdir -p chart-values
-              cat << EOF > ./overrides.yaml
-              esp:
-                image:
-                  repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
-                  tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
-              EOF
-              echo "Merging with chart values..."
-              spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
-              helm template \
-                --name "${RELEASE_NAME}" \
-                --namespace "${RELEASE_NAMESPACE}" \
-                --set "global.cluster.name=${CLUSTER_NAME}" \
-                --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
+          #  - aggregate:
+          #    - task: run-card-tests
+          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
+          #      input_mapping: { repo: pay-endtoend-src }
+          #      params:
+          #        TEST_PROFILE: end2end
+          #        EXTRA_MVN_ARGS: "-Dit.test=!uk.gov.pay.endtoend.tests.publicapi.PaymentAndRefundIT"
+
+          #    - task: run-directdebit-tests
+          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
+          #      input_mapping: { repo: pay-endtoend-src }
+          #      params:
+          #        TEST_PROFILE: end2end-tagged
+          #        GROUPS: uk.gov.pay.endtoend.categories.End2EndDirectDebit
+
+          #    - task: run-product-tests
+          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
+          #      input_mapping: { repo: pay-endtoend-src }
+          #      params:
+          #        TEST_PROFILE: end2end-tagged
+          #        GROUPS: uk.gov.pay.endtoend.categories.End2EndProducts
 
 
-    - name: smoke-tests
+          #- name: deploy-to-production
+          #  serial: true
+          #  plan:
+          #  # FIXME
+          #  - get: pay-cardid-image
+          #    passed: ['build-pay-cardid']
+          #    trigger: true
 
-
-
-
-
-
-
-
-
-
+          #  - task: deploy-to-staging
+          #    config:
+          #      platform: linux
+          #      image_resource:
+          #        type: docker-image
+          #        source:
+          #          repository: govsvc/task_toolbox
+          #          tag: gsp-v1.1.11
+          #      inputs:
+          #      - name: pay-cardid-image
+          #      params:
+          #        CLUSTER_NAME: ((cluster.name))
+          #        CLUSTER_DOMAIN: ((cluster.domain))
+          #        CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
+          #        RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+          #        RELEASE_NAME: production
+          #      run:
+          #        path: /bin/bash
+          #        args:
+          #        - -eu
+          #        - -c
+          #        - |
+          #          echo "Generating helm values for latest image versions..."
+          #          mkdir -p chart-values
+          #          cat << EOF > ./overrides.yaml
+          #          esp:
+          #            image:
+          #              repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
+          #              tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
+          #          EOF
+          #          echo "Merging with chart values..."
+          #          spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
+          #          helm template \
+          #            --name "${RELEASE_NAME}" \
+          #            --namespace "${RELEASE_NAMESPACE}" \
+          #            --set "global.cluster.name=${CLUSTER_NAME}" \
+          #            --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
