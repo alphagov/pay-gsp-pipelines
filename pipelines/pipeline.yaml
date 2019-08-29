@@ -29,6 +29,12 @@ spec:
       - name: build
         jobs:
           - build-cardid
+          - build-toolbox
+          - build-connector
+          - build-ledger
+          - build-products
+          - build-direct-debit-connector
+          - build-direct-debit-frontend
 
     resource_types:
       - name: github
@@ -144,13 +150,13 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
-      - name: pay-endtoend-src
-        type: git
-        source:
-          uri: https://github.com/alphagov/pay-endtoend
-          branch: master
-          username: ((gh-readonly.username))
-          password: ((gh-readonly.password))
+          #- name: pay-endtoend-src
+          #  type: git
+          #  source:
+          #    uri: https://github.com/alphagov/pay-endtoend
+          #    branch: master
+          #    username: ((gh-readonly.username))
+          #    password: ((gh-readonly.password))
 
 
     jobs:
