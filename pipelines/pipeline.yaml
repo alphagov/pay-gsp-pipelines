@@ -29,6 +29,7 @@ spec:
       - name: build
         jobs:
           - build-cardid
+          - build-frontend
           - build-toolbox
           - build-connector
           - build-ledger
@@ -71,6 +72,19 @@ spec:
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/cardid
+
+      - name: pay-frontend-src
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-frontend
+          branch: master
+
+      - name: pay-frontend-image
+        type: harbor
+        icon: gate
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/frontend
 
       - name: pay-toolbox-src
         type: git
@@ -172,13 +186,25 @@ spec:
           params:
             tag_as_latest: true
 
+      - name: build-frontend
+        plan:
+        - get: pipelines
+        - get: pay-frontend-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/frontend.yaml
+          input_mapping: { src: pay-frontend-src }
+        - put: pay-frontend-image
+          params:
+            tag_as_latest: true
+
       - name: build-toolbox
         plan:
         - get: pipelines
         - get: pay-toolbox-src
           trigger: true
         - task: test
-          file: pipelines/tasks/maven-test.yaml
+          file: pipelines/tasks/node-test.yaml
           input_mapping: { src: pay-toolbox-src }
         - put: pay-toolbox-image
           params:
@@ -238,7 +264,7 @@ spec:
         - get: pay-direct-debit-frontend-src
           trigger: true
         - task: test
-          file: pipelines/tasks/maven-test.yaml
+          file: pipelines/tasks/frontend.yaml
           input_mapping: { src: pay-direct-debit-frontend-src }
         - put: pay-direct-debit-frontend-image
           params:
