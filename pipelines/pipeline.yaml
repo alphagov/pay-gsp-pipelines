@@ -212,8 +212,7 @@ spec:
             inputs:
               - name: pay-cardid-src
               - name: pay-cardid-data
-            outputs:
-              - name: pay-cardid-src
+                path: pay-cardid-src/data
             run:
               path: mvn
               dir: pay-cardid-src
