@@ -42,14 +42,14 @@ spec:
         type: registry-image
         source:
           repository: govsvc/concourse-github-resource
-          tag: "gsp-v1.1.11"
+          tag: "gsp-v1.1.31"
 
       - name: harbor
         type: registry-image
         privileged: true
         source:
-          repository: govsvc/gsp-harbor-docker-image-resource
-          tag: "gsp-v1.1.11"
+          repository: govsvc/concourse-harbor-resource
+          tag: "gsp-v1.1.31"
 
     resources:
       - name: pipelines
