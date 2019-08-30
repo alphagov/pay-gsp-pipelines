@@ -201,25 +201,26 @@ spec:
             submodules: none
         - get: pay-cardid-data
           trigger: true
-        - task: test
+        - task: copy-data
           config:
             platform: linux
             image_resource:
               type: docker-image
-              source:
-                repository: maven
-                tag: 3.6.1
+              source: { repository: alpine }
             inputs:
               - name: pay-cardid-src
               - name: pay-cardid-data
-                path: pay-cardid-src/data
+            outputs:
+              - name: pay-cardid-src
             run:
-              path: mvn
-              dir: pay-cardid-src
-              args: [ test ]
+              path: cp
+              args: [ --recursive, pay-cardid-data, pay-cardid-src/data ]
+        - task: build
+          file: pipelines/tasks/maven-build.yaml
+          input_mapping: { src: pay-cardid-src }
         - put: pay-cardid-image
           params:
-            build: pay-cardid-src
+            build: src
             tag_as_latest: true
 
       - name: build-frontend
