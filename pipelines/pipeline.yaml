@@ -201,13 +201,15 @@ spec:
             inputs:
               - name: pay-cardid-src
               - name: pay-cardid-data
-                path: pay-cardid-src/data
+            outputs:
+              - name: pay-cardid-src
             run:
               path: mvn
               dir: pay-cardid-src
               args: [ test ]
         - put: pay-cardid-image
           params:
+            build: pay-cardid-src
             tag_as_latest: true
 
       - name: build-frontend
@@ -220,6 +222,7 @@ spec:
           input_mapping: { src: pay-frontend-src }
         - put: pay-frontend-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-toolbox
@@ -246,6 +249,7 @@ spec:
           input_mapping: { src: pay-toolbox-src }
         - put: pay-toolbox-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-connector
@@ -258,6 +262,7 @@ spec:
           input_mapping: { src: pay-connector-src }
         - put: pay-connector-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-ledger
@@ -270,6 +275,7 @@ spec:
           input_mapping: { src: pay-ledger-src }
         - put: pay-ledger-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-products
@@ -282,6 +288,7 @@ spec:
           input_mapping: { src: pay-products-src }
         - put: pay-products-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-direct-debit-connector
@@ -294,6 +301,7 @@ spec:
           input_mapping: { src: pay-direct-debit-connector-src }
         - put: pay-direct-debit-connector-image
           params:
+            build: src
             tag_as_latest: true
 
       - name: build-direct-debit-frontend
@@ -306,6 +314,7 @@ spec:
           input_mapping: { src: pay-direct-debit-frontend-src }
         - put: pay-direct-debit-frontend-image
           params:
+            build: src
             tag_as_latest: true
 
 

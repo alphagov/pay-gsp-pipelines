@@ -9,6 +9,9 @@ image_resource:
 inputs:
   - name: src
 
+outputs:
+  - name: src
+
 run:
   path: bash
   dir: src
