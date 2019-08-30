@@ -10,7 +10,7 @@ inputs:
   - name: src
 
 run:
-  path: bash
+  path: ash
   dir: src
   args:
     - -c
