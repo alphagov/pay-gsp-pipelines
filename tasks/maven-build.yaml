@@ -19,5 +19,5 @@ run:
     - -c
     - |
       set -o errexit -o nounset -o pipefail
-      mvn clean verify
-      mvn clean package
+      mvn test
+      mvn -Dmaven.test.skip=true -DskipTests package
