@@ -227,6 +227,20 @@ spec:
         - get: pipelines
         - get: pay-toolbox-src
           trigger: true
+        - task: env-file
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source: { repository: node }
+            inputs:
+              - name: pay-toolbox-src
+            outputs:
+              - name: pay-toolbox-src
+            run:
+              path: bash
+              dir: pay-toolbox-src
+              args: [ "./scripts/generate-dev-environment" ]
         - task: test
           file: pipelines/tasks/node-test.yaml
           input_mapping: { src: pay-toolbox-src }
