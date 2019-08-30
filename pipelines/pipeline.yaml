@@ -65,6 +65,11 @@ spec:
         source:
           uri: https://github.com/alphagov/pay-cardid
           branch: master
+
+      - name: pay-cardid-data
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-cardid-data
           username: ((gh-readonly.username))
           password: ((gh-readonly.password))
 
@@ -181,6 +186,11 @@ spec:
         - get: pipelines
         - get: pay-cardid-src
           trigger: true
+          params:
+            submodules: none
+        - get: pay-cardid-data
+          trigger: true
+          path: pay-cardid-src/data
         - task: test
           file: pipelines/tasks/maven-test.yaml
           input_mapping: { src: pay-cardid-src }
