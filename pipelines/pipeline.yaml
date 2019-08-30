@@ -213,8 +213,13 @@ spec:
             outputs:
               - name: pay-cardid-src
             run:
-              path: cp
-              args: [ --recursive, pay-cardid-data, pay-cardid-src/data ]
+              path: ash
+              args:
+                - -c
+                - |
+                  set -o errexit -o xtrace
+                  mkdir pay-cardid-src/data
+                  cp -r pay-cardid-data/* pay-cardid-src/data/
         - task: build
           file: pipelines/tasks/maven-build.yaml
           input_mapping: { src: pay-cardid-src }
