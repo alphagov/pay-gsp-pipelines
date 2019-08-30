@@ -10,6 +10,16 @@ inputs:
   - name: src
 
 run:
-  path: npm
+  path: bash
   dir: src
-  args: [ run, "test:unit" ]
+  args:
+    - -c
+    - |
+      set -o errexit -o nounset -o pipefail
+      node --version
+      npm --version
+      npm install
+      npm ci
+      test -x ./scripts/generate-dev-environment && ./scripts/generate-dev-environment
+      npm run lint
+      npm run test:unit
