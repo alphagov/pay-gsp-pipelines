@@ -218,7 +218,7 @@ spec:
                 - -c
                 - |
                   set -o errexit -o xtrace
-                  mkdir pay-cardid-src/data
+                  mkdir -p pay-cardid-src/data
                   cp -r pay-cardid-data/* pay-cardid-src/data/
         - task: build
           file: pipelines/tasks/maven-build.yaml
