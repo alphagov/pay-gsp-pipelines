@@ -36,6 +36,9 @@ spec:
           - build-products
           - build-direct-debit-connector
           - build-direct-debit-frontend
+      - name: deploy
+        jobs:
+          - deploy-staging
 
     resource_types:
       - name: github
@@ -58,6 +61,15 @@ spec:
         source:
           uri: https://github.com/alphagov/pay-gsp-pipelines
           branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
+
+      - name: deployment
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-deployment
+          branch: develop
           username: re-autom8-ci
           password: ((github.api-token))
 
@@ -315,6 +327,19 @@ spec:
           params:
             build: src
             tag_as_latest: true
+
+      - name: deploy-staging
+        plan:
+        - get: deployment
+          trigger: true
+        - task: render-manifests
+          file: deployment/ci/tasks/render.yaml
+          vars:
+            environment: staging
+        - task: deploy-manifests
+          file: deployment/ci/tasks/deploy.yaml
+          vars:
+            environment: staging
 
 
           #- name: deploy-to-staging
