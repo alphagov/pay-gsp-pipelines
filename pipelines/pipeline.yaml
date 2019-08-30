@@ -190,10 +190,22 @@ spec:
             submodules: none
         - get: pay-cardid-data
           trigger: true
-          path: pay-cardid-src/data
         - task: test
-          file: pipelines/tasks/maven-test.yaml
-          input_mapping: { src: pay-cardid-src }
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: maven
+                tag: 3.6.1
+            inputs:
+              - name: pay-cardid-src
+              - name: pay-cardid-data
+                path: pay-cardid-src/data
+            run:
+              path: mvn
+              dir: pay-cardid-src
+              args: [ test ]
         - put: pay-cardid-image
           params:
             tag_as_latest: true
