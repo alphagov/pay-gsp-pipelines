@@ -54,6 +54,7 @@ spec:
     resources:
       - name: pipelines
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-gsp-pipelines
           branch: master
@@ -62,12 +63,14 @@ spec:
 
       - name: pay-cardid-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-cardid
           branch: master
 
       - name: pay-cardid-data
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-cardid-data
           username: ((gh-readonly.username))
@@ -75,104 +78,112 @@ spec:
 
       - name: pay-cardid-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/cardid
 
       - name: pay-frontend-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-frontend
           branch: master
 
       - name: pay-frontend-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/frontend
 
       - name: pay-toolbox-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-toolbox
           branch: master
 
       - name: pay-toolbox-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/toolbox
 
       - name: pay-connector-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-connector
           branch: master
 
       - name: pay-connector-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/connector
 
       - name: pay-ledger-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-ledger
           branch: master
 
       - name: pay-ledger-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/ledger
 
       - name: pay-products-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-products
           branch: master
 
       - name: pay-products-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/products
 
       - name: pay-direct-debit-connector-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-direct-debit-connector
           branch: master
 
       - name: pay-direct-debit-connector-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-connector
 
       - name: pay-direct-debit-frontend-src
         type: git
+        icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-direct-debit-frontend
           branch: master
 
       - name: pay-direct-debit-frontend-image
         type: harbor
-        icon: gate
+        icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
           #- name: pay-endtoend-src
           #  type: git
+          #  icon: github-circle
           #  source:
           #    uri: https://github.com/alphagov/pay-endtoend
           #    branch: master
