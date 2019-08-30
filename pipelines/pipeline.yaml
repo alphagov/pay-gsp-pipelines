@@ -201,25 +201,8 @@ spec:
             submodules: none
         - get: pay-cardid-data
           trigger: true
-        - task: copy-data
-          config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source: { repository: alpine }
-            inputs:
-              - name: pay-cardid-src
-              - name: pay-cardid-data
-            outputs:
-              - name: pay-cardid-src
-            run:
-              path: ash
-              args:
-                - -c
-                - |
-                  set -o errexit -o xtrace
-                  mkdir -p pay-cardid-src/data
-                  cp -r pay-cardid-data/* pay-cardid-src/data/
+        - task: copy-cardid-data
+          file: pipelines/tasks/copy-cardid-data.yaml
         - task: build
           file: pipelines/tasks/maven-build.yaml
           input_mapping: { src: pay-cardid-src }

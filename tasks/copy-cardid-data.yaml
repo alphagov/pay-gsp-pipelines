@@ -1,0 +1,21 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: alpine }
+
+inputs:
+  - name: pay-cardid-src
+  - name: pay-cardid-data
+
+outputs:
+  - name: pay-cardid-src
+
+run:
+  path: ash
+  args:
+    - -c
+    - |
+      set -o errexit -o xtrace
+      mkdir -p pay-cardid-src/data
+      cp -r pay-cardid-data/* pay-cardid-src/data/
