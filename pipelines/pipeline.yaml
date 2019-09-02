@@ -165,6 +165,62 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/products
 
+      - name: pay-products-ui-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-products-ui
+          branch: master
+
+      - name: pay-products-ui-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products-ui
+
+      - name: pay-selfservice-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-selfservice
+          branch: master
+
+      - name: pay-selfservice-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/selfservice
+
+      - name: pay-publicauth-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-publicauth
+          branch: master
+
+      - name: pay-publicauth-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicauth
+
+      - name: pay-publicapi-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-publicapi
+          branch: master
+
+      - name: pay-publicapi-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicapi
+
       - name: pay-direct-debit-connector-src
         type: git
         icon: github-circle
@@ -298,6 +354,58 @@ spec:
           file: pipelines/tasks/maven-build.yaml
           input_mapping: { src: pay-products-src }
         - put: pay-products-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-products-ui
+        plan:
+        - get: pipelines
+        - get: pay-products-ui-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/node-test.yaml
+          input_mapping: { src: pay-products-ui-src }
+        - put: pay-products-ui-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-selfservice
+        plan:
+        - get: pipelines
+        - get: pay-selfservice-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/node-test.yaml
+          input_mapping: { src: pay-selfservice-src }
+        - put: pay-selfservice-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-publicauth
+        plan:
+        - get: pipelines
+        - get: pay-publicauth-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/maven-build.yaml
+          input_mapping: { src: pay-publicauth-src }
+        - put: pay-publicauth-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-publicapi
+        plan:
+        - get: pipelines
+        - get: pay-publicapi-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/maven-build.yaml
+          input_mapping: { src: pay-publicapi-src }
+        - put: pay-publicapi-image
           params:
             build: src
             tag_as_latest: true
