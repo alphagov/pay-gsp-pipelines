@@ -368,7 +368,7 @@ spec:
         - get: pay-products-ui-src
           trigger: true
         - task: test
-          file: pipelines/tasks/node-test.yaml
+          file: pipelines/tasks/frontend.yaml
           input_mapping: { src: pay-products-ui-src }
         - put: pay-products-ui-image
           params:
@@ -381,7 +381,7 @@ spec:
         - get: pay-selfservice-src
           trigger: true
         - task: test
-          file: pipelines/tasks/node-test.yaml
+          file: pipelines/tasks/frontend.yaml
           input_mapping: { src: pay-selfservice-src }
         - put: pay-selfservice-image
           params:
