@@ -34,6 +34,10 @@ spec:
           - build-connector
           - build-ledger
           - build-products
+          - build-products-ui
+          - build-selfservice
+          - build-publicauth
+          - build-publicapi
           - build-direct-debit-connector
           - build-direct-debit-frontend
       - name: deploy
