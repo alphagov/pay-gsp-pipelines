@@ -31,6 +31,7 @@ spec:
           - build-cardid
           - build-frontend
           - build-toolbox
+          - build-adminusers
           - build-connector
           - build-ledger
           - build-products
@@ -126,6 +127,20 @@ spec:
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/toolbox
+
+      - name: pay-adminusers-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-adminusers
+          branch: master
+
+      - name: pay-adminusers-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/adminusers
 
       - name: pay-connector-src
         type: git
@@ -319,6 +334,19 @@ spec:
           file: pipelines/tasks/node-test.yaml
           input_mapping: { src: pay-toolbox-src }
         - put: pay-toolbox-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-adminusers
+        plan:
+        - get: pipelines
+        - get: pay-adminusers-src
+          trigger: true
+        - task: build
+          file: pipelines/tasks/maven-build.yaml
+          input_mapping: { src: pay-adminusers-src }
+        - put: pay-adminusers-image
           params:
             build: src
             tag_as_latest: true
