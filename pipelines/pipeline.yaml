@@ -248,6 +248,20 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
+      - name: pay-scripts
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-scripts
+          branch: master
+
+      - name: pay-postgresql-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/postgresql
+
           #- name: pay-endtoend-src
           #  type: git
           #  icon: github-circle
@@ -446,6 +460,15 @@ spec:
             build: src
             tag_as_latest: true
 
+      - name: build-postgresql
+        plan:
+        - get: pay-scripts
+          trigger: true
+        - put: pay-postgresql-image
+          params:
+            build: pay-scripts/images/posgres
+            tag_as_latest: true
+
       - name: deploy-staging
         plan:
         - get: pay-cardid-image
@@ -474,6 +497,8 @@ spec:
           passed: [ build-direct-debit-connector ]
         - get: pay-direct-debit-frontend-image
           passed: [ build-direct-debit-frontend ]
+        - get: pay-postgresql-image
+          passed: [ build-postgresql ]
         - get: deployment
           trigger: true
         - task: render-manifests
@@ -484,54 +509,6 @@ spec:
           file: deployment/ci/tasks/deploy.yaml
           vars:
             environment: staging
-
-
-          #- name: deploy-to-staging
-          #  serial: true
-          #  plan:
-          #  # FIXME
-          #  - get: pay-cardid-image
-          #    passed: ['build-pay-cardid']
-          #    trigger: true
-
-          #  - task: deploy-to-staging
-          #    config:
-          #      platform: linux
-          #      image_resource:
-          #        type: docker-image
-          #        source:
-          #          repository: govsvc/task_toolbox
-          #          tag: gsp-v1.1.11
-          #      inputs:
-          #      - name: pay-cardid-image
-          #      params:
-          #        CLUSTER_NAME: ((cluster.name))
-          #        CLUSTER_DOMAIN: ((cluster.domain))
-          #        CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
-          #        RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-          #        RELEASE_NAME: staging
-          #      run:
-          #        path: /bin/bash
-          #        args:
-          #        - -eu
-          #        - -c
-          #        - |
-          #          echo "Generating helm values for latest image versions..."
-          #          mkdir -p chart-values
-          #          cat << EOF > ./overrides.yaml
-          #          cardid:
-          #            image:
-          #              repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
-          #              tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
-          #          EOF
-          #          echo "Merging with chart values..."
-          #          spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
-          #          helm template \
-          #            --name "${RELEASE_NAME}" \
-          #            --namespace "${RELEASE_NAMESPACE}" \
-          #            --set "global.cluster.name=${CLUSTER_NAME}" \
-          #            --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
-
 
           #- name: test-in-staging
           #  serial: true
@@ -561,50 +538,3 @@ spec:
           #      params:
           #        TEST_PROFILE: end2end-tagged
           #        GROUPS: uk.gov.pay.endtoend.categories.End2EndProducts
-
-
-          #- name: deploy-to-production
-          #  serial: true
-          #  plan:
-          #  # FIXME
-          #  - get: pay-cardid-image
-          #    passed: ['build-pay-cardid']
-          #    trigger: true
-
-          #  - task: deploy-to-staging
-          #    config:
-          #      platform: linux
-          #      image_resource:
-          #        type: docker-image
-          #        source:
-          #          repository: govsvc/task_toolbox
-          #          tag: gsp-v1.1.11
-          #      inputs:
-          #      - name: pay-cardid-image
-          #      params:
-          #        CLUSTER_NAME: ((cluster.name))
-          #        CLUSTER_DOMAIN: ((cluster.domain))
-          #        CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
-          #        RELEASE_NAMESPACE: ((namespace-deployer.namespace))
-          #        RELEASE_NAME: production
-          #      run:
-          #        path: /bin/bash
-          #        args:
-          #        - -eu
-          #        - -c
-          #        - |
-          #          echo "Generating helm values for latest image versions..."
-          #          mkdir -p chart-values
-          #          cat << EOF > ./overrides.yaml
-          #          esp:
-          #            image:
-          #              repository: $(cat pay-cardid-image/repository)@$(cat pay-cardid-image/digest | cut -d ':' -f 1)
-          #              tag: $(cat pay-cardid-image/digest | cut -d ':' -f 2)
-          #          EOF
-          #          echo "Merging with chart values..."
-          #          spruce merge ./pay-cardid-src/chart/values.yaml ./overrides.yaml | tee -a chart-values/values.yaml
-          #          helm template \
-          #            --name "${RELEASE_NAME}" \
-          #            --namespace "${RELEASE_NAMESPACE}" \
-          #            --set "global.cluster.name=${CLUSTER_NAME}" \
-          #            --set "global.cluster.domain=${CLUSTER_DOMAIN}" | kubectl apply -n "${RELEASE_NAMESPACE}" -f
