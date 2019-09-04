@@ -468,7 +468,7 @@ spec:
           trigger: true
         - put: pay-postgresql-image
           params:
-            build: pay-scripts/images/posgres
+            build: pay-scripts/images/postgres
             tag_as_latest: true
 
       - name: deploy-staging
