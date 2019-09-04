@@ -25,26 +25,6 @@ spec:
           targets: ((harbor.notary_targets_passphrase))
           delegation: ((harbor.notary_delegation_passphrase))
 
-    groups:
-      - name: build
-        jobs:
-          - build-cardid
-          - build-frontend
-          - build-toolbox
-          - build-adminusers
-          - build-connector
-          - build-ledger
-          - build-products
-          - build-products-ui
-          - build-selfservice
-          - build-publicauth
-          - build-publicapi
-          - build-direct-debit-connector
-          - build-direct-debit-frontend
-      - name: deploy
-        jobs:
-          - deploy-staging
-
     resource_types:
       - name: github
         type: registry-image
