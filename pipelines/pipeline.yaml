@@ -468,6 +468,32 @@ spec:
 
       - name: deploy-staging
         plan:
+        - get: pay-cardid-image
+          passed: [ build-cardid ]
+        - get: pay-frontend-image
+          passed: [ build-frontend ]
+        - get: pay-toolbox-image
+          passed: [ build-toolbox ]
+        - get: pay-adminusers-image
+          passed: [ build-adminusers ]
+        - get: pay-connector-image
+          passed: [ build-connector ]
+        - get: pay-ledger-image
+          passed: [ build-ledger ]
+        - get: pay-products-image
+          passed: [ build-products ]
+        - get: pay-products-ui-image
+          passed: [ build-products-ui ]
+        - get: pay-selfservice-image
+          passed: [ build-selfservice ]
+        - get: pay-publicauth-image
+          passed: [ build-publicauth ]
+        - get: pay-publicapi-image
+          passed: [ build-publicapi ]
+        - get: pay-direct-debit-connector-image
+          passed: [ build-direct-debit-connector ]
+        - get: pay-direct-debit-frontend-image
+          passed: [ build-direct-debit-frontend ]
         - get: deployment
           trigger: true
         - task: render-manifests
