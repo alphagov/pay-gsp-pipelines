@@ -254,6 +254,8 @@ spec:
         source:
           uri: https://github.com/alphagov/pay-scripts
           branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
 
       - name: pay-postgresql-image
         type: harbor
