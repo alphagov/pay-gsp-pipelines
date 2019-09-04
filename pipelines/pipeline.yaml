@@ -90,8 +90,8 @@ spec:
         icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-cardid-data
-          username: ((gh-readonly.username))
-          password: ((gh-readonly.password))
+          username: re-autom8-ci
+          password: ((github.api-token))
 
       - name: pay-cardid-image
         type: harbor
@@ -274,8 +274,6 @@ spec:
           #  source:
           #    uri: https://github.com/alphagov/pay-endtoend
           #    branch: master
-          #    username: ((gh-readonly.username))
-          #    password: ((gh-readonly.password))
 
 
     jobs:
