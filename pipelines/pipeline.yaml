@@ -113,7 +113,7 @@ spec:
         icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-adminusers
-          branch: fix-async-calls
+          branch: master
 
       - name: pay-adminusers-image
         type: harbor
