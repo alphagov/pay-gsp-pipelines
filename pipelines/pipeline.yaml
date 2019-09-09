@@ -305,13 +305,6 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/postgresql
 
-          #- name: pay-endtoend-src
-          #  type: git
-          #  icon: github-circle
-          #  source:
-          #    uri: https://github.com/alphagov/pay-endtoend
-          #    branch: master
-
 
     jobs:
       - name: build-cardid
@@ -534,6 +527,44 @@ spec:
 
       - name: deploy-staging
         plan:
+        - get: pay-adminusers-image
+          passed: [build-adminusers]
+        - get: pay-cardid-image
+          passed: [build-cardid]
+        - get: pay-connector-image
+          passed: [build-connector]
+        - get: pay-demo-service-image
+          passed: [build-demo-service]
+        - get: pay-direct-debit-connector-image
+          passed: [build-direct-debit-connector]
+        - get: pay-direct-debit-frontend-image
+          passed: [build-direct-debit-frontend]
+        - get: pay-frontend-image
+          passed: [build-frontend]
+        - get: pay-ledger-image
+          passed: [build-ledger]
+        - get: pay-postgresql-image
+          passed: [build-postgresql]
+        - get: pay-products-image
+          passed: [build-products]
+        - get: pay-products-ui-image
+          passed: [build-products-ui]
+        - get: pay-publicapi-image
+          passed: [build-publicapi]
+        - get: pay-publicauth-image
+          passed: [build-publicauth]
+        - get: pay-selfservice-image
+          passed: [build-selfservice]
+        - get: pay-stubs-image
+          passed: [build-stubs]
+        - get: pay-toolbox-image
+          passed: [build-toolbox]
+        - get: pay-stubs-image
+          passed: [build-stubs]
+        - get: pay-demo-service-image
+          passed: [build-demo-service]
+        - get: pay-postgresql-image
+          passed: [build-postgresql]
         - get: deployment
           trigger: true
         - task: render-manifests
@@ -552,13 +583,6 @@ spec:
           passed: [deploy-staging]
           trigger: true
         - get: pay-endtoend
-          trigger: true
-        - get: pay-stubs-image
-          passed: [build-stubs]
-        - get: pay-demo-service-image
-          passed: [build-demo-service]
-        - get: pay-postgresql-image
-          passed: [build-postgresql]
         - task: card-tests
           file: deployment/ci/tasks/endtoend.yaml
           vars:
