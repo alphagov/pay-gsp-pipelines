@@ -485,7 +485,7 @@ spec:
           trigger: true
         - put: pay-stubs-image
           params:
-            build: src
+            build: pay-stubs-src
             tag_as_latest: true
 
       - name: build-postgresql
