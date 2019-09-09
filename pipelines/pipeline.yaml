@@ -559,12 +559,6 @@ spec:
           passed: [build-stubs]
         - get: pay-toolbox-image
           passed: [build-toolbox]
-        - get: pay-stubs-image
-          passed: [build-stubs]
-        - get: pay-demo-service-image
-          passed: [build-demo-service]
-        - get: pay-postgresql-image
-          passed: [build-postgresql]
         - get: deployment
           trigger: true
         - task: render-manifests
