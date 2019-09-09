@@ -506,6 +506,7 @@ spec:
           vars:
             environment: staging
         - task: deploy-manifests
+          timeout: 5m
           file: deployment/ci/tasks/deploy.yaml
           vars:
             environment: staging
