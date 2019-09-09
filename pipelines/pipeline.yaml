@@ -58,6 +58,15 @@ spec:
           username: re-autom8-ci
           password: ((github.api-token))
 
+      - name: pay-endtoend
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-endtoend
+          branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
+
       - name: pay-cardid-src
         type: git
         icon: github-circle
@@ -263,6 +272,22 @@ spec:
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/stubs
+
+      - name: pay-demo-service-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-demo-service
+          branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
+
+      - name: pay-demo-service-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/demo-service
 
       - name: pay-scripts
         type: git
@@ -488,6 +513,16 @@ spec:
             build: pay-stubs-src
             tag_as_latest: true
 
+      - name: build-demo-service
+        plan:
+        - get: pipelines
+        - get: pay-demo-service-src
+          trigger: true
+        - put: pay-demo-service-image
+          params:
+            build: pay-demo-service-src
+            tag_as_latest: true
+
       - name: build-postgresql
         plan:
         - get: pay-scripts
@@ -509,4 +544,33 @@ spec:
           timeout: 5m
           file: deployment/ci/tasks/deploy.yaml
           vars:
+            environment: staging
+
+      - name: end-to-end
+        plan:
+        - get: deployment
+          passed: deploy-staging
+          trigger: true
+        - get: pay-endtoend
+          trigger: true
+        - get: pay-stubs-image
+          passed: [build-stubs]
+        - get: pay-demo-service-image
+          passed: [build-demo-service]
+        - get: pay-postgresql-image
+          passed: [build-postgresql]
+        - task: card-tests
+          file: deployment/ci/tasks/endtoend.yaml
+          vars:
+            suite: card
+            environment: staging
+        - task: directdebit-tests
+          file: deployment/ci/tasks/endtoend.yaml
+          vars:
+            suite: directdebit
+            environment: staging
+        - task: products-tests
+          file: deployment/ci/tasks/endtoend.yaml
+          vars:
+            suite: products
             environment: staging
