@@ -248,6 +248,22 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/direct-debit-frontend
 
+      - name: pay-stubs-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-stubs
+          branch: master
+          username: re-autom8-ci
+          password: ((github.api-token))
+
+      - name: pay-stubs-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/stubs
+
       - name: pay-scripts
         type: git
         icon: github-circle
@@ -462,6 +478,19 @@ spec:
             build: src
             tag_as_latest: true
 
+      - name: build-stubs
+        plan:
+        - get: pipelines
+        - get: pay-stubs-src
+          trigger: true
+        - task: test
+          file: pipelines/tasks/frontend.yaml
+          input_mapping: { src: pay-stubs-src }
+        - put: pay-stubs-image
+          params:
+            build: src
+            tag_as_latest: true
+
       - name: build-postgresql
         plan:
         - get: pay-scripts
@@ -473,48 +502,6 @@ spec:
 
       - name: deploy-staging
         plan:
-        - get: pay-cardid-image
-          passed: [ build-cardid ]
-          params: { skip_download: true }
-        - get: pay-frontend-image
-          passed: [ build-frontend ]
-          params: { skip_download: true }
-        - get: pay-toolbox-image
-          passed: [ build-toolbox ]
-          params: { skip_download: true }
-        - get: pay-adminusers-image
-          passed: [ build-adminusers ]
-          params: { skip_download: true }
-        - get: pay-connector-image
-          passed: [ build-connector ]
-          params: { skip_download: true }
-        - get: pay-ledger-image
-          passed: [ build-ledger ]
-          params: { skip_download: true }
-        - get: pay-products-image
-          passed: [ build-products ]
-          params: { skip_download: true }
-        - get: pay-products-ui-image
-          passed: [ build-products-ui ]
-          params: { skip_download: true }
-        - get: pay-selfservice-image
-          passed: [ build-selfservice ]
-          params: { skip_download: true }
-        - get: pay-publicauth-image
-          passed: [ build-publicauth ]
-          params: { skip_download: true }
-        - get: pay-publicapi-image
-          passed: [ build-publicapi ]
-          params: { skip_download: true }
-        - get: pay-direct-debit-connector-image
-          passed: [ build-direct-debit-connector ]
-          params: { skip_download: true }
-        - get: pay-direct-debit-frontend-image
-          passed: [ build-direct-debit-frontend ]
-          params: { skip_download: true }
-        - get: pay-postgresql-image
-          passed: [ build-postgresql ]
-          params: { skip_download: true }
         - get: deployment
           trigger: true
         - task: render-manifests
@@ -525,32 +512,3 @@ spec:
           file: deployment/ci/tasks/deploy.yaml
           vars:
             environment: staging
-
-          #- name: test-in-staging
-          #  serial: true
-          #  plan:
-          #  - get: every-10m
-          #    trigger: true
-          #  - get: pay-endtoend-src
-
-          #  - aggregate:
-          #    - task: run-card-tests
-          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
-          #      input_mapping: { repo: pay-endtoend-src }
-          #      params:
-          #        TEST_PROFILE: end2end
-          #        EXTRA_MVN_ARGS: "-Dit.test=!uk.gov.pay.endtoend.tests.publicapi.PaymentAndRefundIT"
-
-          #    - task: run-directdebit-tests
-          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
-          #      input_mapping: { repo: pay-endtoend-src }
-          #      params:
-          #        TEST_PROFILE: end2end-tagged
-          #        GROUPS: uk.gov.pay.endtoend.categories.End2EndDirectDebit
-
-          #    - task: run-product-tests
-          #      file: pay-endtoend-src/ci/tasks/run-tests.yml
-          #      input_mapping: { repo: pay-endtoend-src }
-          #      params:
-          #        TEST_PROFILE: end2end-tagged
-          #        GROUPS: uk.gov.pay.endtoend.categories.End2EndProducts
