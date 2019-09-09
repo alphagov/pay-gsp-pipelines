@@ -484,7 +484,7 @@ spec:
         - get: pay-stubs-src
           trigger: true
         - task: test
-          file: pipelines/tasks/frontend.yaml
+          file: pipelines/tasks/node-test.yaml
           input_mapping: { src: pay-stubs-src }
         - put: pay-stubs-image
           params:
