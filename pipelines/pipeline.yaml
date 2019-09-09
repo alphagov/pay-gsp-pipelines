@@ -549,7 +549,7 @@ spec:
       - name: end-to-end
         plan:
         - get: deployment
-          passed: deploy-staging
+          passed: [deploy-staging]
           trigger: true
         - get: pay-endtoend
           trigger: true
