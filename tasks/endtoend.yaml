@@ -1,0 +1,52 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: registry.((cluster.domain))/pay/endtoend
+    tag: latest
+    username: ((harbor.harbor_username))
+    password: ((harbor.harbor_password))
+
+params:
+  TEST_SUITE: ((suite))
+  DB_CONNECTOR_HOST: ((environment))-postgresql
+  DB_CONNECTOR_USER: connector
+  DB_DIRECT_DEBIT_CONNECTOR_HOST: ((environment))-postgresql
+  DB_DIRECT_DEBIT_CONNECTOR_USER: directdebit_connector
+  DB_PUBLICAUTH_HOST: ((environment))-postgresql
+  DB_PUBLICAUTH_USER: publicauth
+  DB_ADMINUSERS_HOST: ((environment))-postgresql
+  DB_ADMINUSERS_USER: adminusers
+  DB_PRODUCTS_HOST: ((environment))-postgresql
+  DB_PRODUCTS_USER: products
+  DB_PASSWORD: mysecretpassword
+  DEMOSERVICE_PAYSTART_URL: http://((environment))-demo-service
+  PUBLICAPI_URL: http://((environment))-public-api
+  PUBLIC_AUTH_URL: http://((environment))-public-auth
+  TEST_GATEWAY_ACCOUNT_ID: 111
+  CONNECTOR_URL: http://((environment))-connector
+  DIRECT_DEBIT_CONNECTOR_URL: http://((environment))-direct-debit-connector
+  ADMINUSERS_URL: http://((environment))-adminusers
+  SELFSERVICE_URL: http://((environment))-self-service
+  SELFSERVICE_USERNAME: alice.111@mail.fake
+  SELFSERVICE_PASSWORD: arandompassword
+  SELFSERVICE_OTP_KEY: 55w7bwl169
+  STUBS_URL: http://((environment))-stubs/
+  DB_SETUP_FOR_SMOKE: true
+  FRONTEND_URL: http://((environment))-frontend
+  ADMIN_USERS_URL: http://((environment))-adminusers
+  NOTIFICATIONS_URL: http://((environment))-notifications
+  PRODUCTS_URL: http://((environment))-products
+  PRODUCTS_UI_URL: http://((environment))-products-ui
+  PRODUCTS_API_TOKEN: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+  HTTP_ZAP_ENABLED: false
+  HTTP_ZAP_HOST: ((environment))-zap
+  HTTP_ZAP_PORT: 8080
+  HTTP_ZAP_SCHEME: http
+  WEB_DRIVER: CHROME_HEADLESS
+  SELENIUM_HUB_URL: http://selenium.apps.internal:11444/wd/hub
+  CHROME_DRIVER_PATH: /usr/bin/chromedriver
+
+run:
+  path: /app/bin/e2e-((suite))

@@ -615,21 +615,22 @@ spec:
         - get: pay-endtoend-image
           passed: [build-endtoend]
           trigger: true
+        - get: pipelines
         - task: card-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend.yaml
+          file: pipelines/tasks/endtoend.yaml
           vars:
             suite: card
             environment: staging
         - task: directdebit-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend.yaml
+          file: pipelines/tasks/endtoend.yaml
           vars:
             suite: directdebit
             environment: staging
         - task: products-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend.yaml
+          file: pipelines/tasks/endtoend.yaml
           vars:
             suite: products
             environment: staging
