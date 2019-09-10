@@ -542,6 +542,7 @@ spec:
             tag_as_latest: true
 
       - name: deploy-staging
+        serial: true
         serial_groups: [deploy-in-progress]
         plan:
         - get: pay-adminusers-image
@@ -605,6 +606,7 @@ spec:
             environment: staging
 
       - name: end-to-end
+        serial: true
         serial_groups: [deploy-in-progress]
         plan:
         - get: deployment
