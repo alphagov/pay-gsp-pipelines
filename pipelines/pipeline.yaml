@@ -58,7 +58,7 @@ spec:
           username: re-autom8-ci
           password: ((github.api-token))
 
-      - name: pay-endtoend
+      - name: pay-endtoend-src
         type: git
         icon: github-circle
         source:
@@ -66,6 +66,13 @@ spec:
           branch: master
           username: re-autom8-ci
           password: ((github.api-token))
+
+      - name: pay-endtoend-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/endtoend
 
       - name: pay-cardid-src
         type: git
@@ -525,7 +532,17 @@ spec:
             build: pay-scripts/images/postgres
             tag_as_latest: true
 
+      - name: build-endtoend
+        plan:
+        - get: pay-endtoend-src
+          trigger: true
+        - put: pay-endtoend-image
+          params:
+            build: pay-endtoend-src
+            tag_as_latest: true
+
       - name: deploy-staging
+        serial_groups: [deploy-in-progress]
         plan:
         - get: pay-adminusers-image
           passed: [build-adminusers]
@@ -588,22 +605,28 @@ spec:
             environment: staging
 
       - name: end-to-end
+        serial_groups: [deploy-in-progress]
         plan:
         - get: deployment
           passed: [deploy-staging]
           trigger: true
-        - get: pay-endtoend
+        - get: pay-endtoend-image
+          passed: [build-endtoend]
+          trigger: true
         - task: card-tests
+          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend.yaml
           vars:
             suite: card
             environment: staging
         - task: directdebit-tests
+          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend.yaml
           vars:
             suite: directdebit
             environment: staging
         - task: products-tests
+          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend.yaml
           vars:
             suite: products
