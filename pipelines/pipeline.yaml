@@ -63,7 +63,7 @@ spec:
         icon: github-circle
         source:
           uri: https://github.com/alphagov/pay-endtoend
-          branch: master
+          branch: disable-dev-shm
           username: re-autom8-ci
           password: ((github.api-token))
 
