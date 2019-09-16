@@ -296,23 +296,6 @@ spec:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/demo-service
 
-      - name: pay-scripts
-        type: git
-        icon: github-circle
-        source:
-          uri: https://github.com/alphagov/pay-scripts
-          branch: master
-          username: re-autom8-ci
-          password: ((github.api-token))
-
-      - name: pay-postgresql-image
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/postgresql
-
-
     jobs:
       - name: build-cardid
         plan:
@@ -521,15 +504,6 @@ spec:
         - put: pay-demo-service-image
           params:
             build: pay-demo-service-src
-            tag_as_latest: true
-
-      - name: build-postgresql
-        plan:
-        - get: pay-scripts
-          trigger: true
-        - put: pay-postgresql-image
-          params:
-            build: pay-scripts/images/postgres
             tag_as_latest: true
 
       - name: build-endtoend
