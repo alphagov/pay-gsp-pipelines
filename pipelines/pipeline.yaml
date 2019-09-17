@@ -588,19 +588,19 @@ spec:
           trigger: true
         - task: card-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend-concourse.yaml
+          file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: card
             environment: staging
         - task: directdebit-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend-concourse.yaml
+          file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: directdebit
             environment: staging
         - task: products-tests
           image: pay-endtoend-image
-          file: deployment/ci/tasks/endtoend-concourse.yaml
+          file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: products
             environment: staging
