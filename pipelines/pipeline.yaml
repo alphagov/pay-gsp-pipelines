@@ -537,6 +537,9 @@ spec:
         - get: pay-direct-debit-frontend-image
           passed: [build-direct-debit-frontend]
           params: { skip_download: true }
+        - get: pay-endtoend-image
+          passed: [build-endtoend]
+          params: { skip_download: true }
         - get: pay-frontend-image
           passed: [build-frontend]
           params: { skip_download: true }
@@ -583,23 +586,17 @@ spec:
         - get: deployment
           passed: [deploy-staging]
           trigger: true
-        - get: pay-endtoend-image
-          passed: [build-endtoend]
-          trigger: true
         - task: card-tests
-          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: card
             environment: staging
         - task: directdebit-tests
-          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: directdebit
             environment: staging
         - task: products-tests
-          image: pay-endtoend-image
           file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
             suite: products
