@@ -586,6 +586,9 @@ spec:
         - get: deployment
           passed: [deploy-staging]
           trigger: true
+        - get: pay-endtoend-image
+          passed: [build-endtoend, deploy-staging]
+          trigger: true
         - task: card-tests
           file: deployment/ci/tasks/endtoend-k8s.yaml
           vars:
