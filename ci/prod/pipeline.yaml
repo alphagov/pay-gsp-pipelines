@@ -51,6 +51,7 @@ spec:
         source:
           <<: *github_source
           paths:
+            - tasks
             - charts/pay
 
       - name: release
