@@ -538,6 +538,7 @@ spec:
               trigger: true
 
         - get: src
+          trigger: true
 
         - task: update-app-versions
           file: src/tasks/update-app-versions-pay.yaml
