@@ -1,21 +1,14 @@
-# TO DO
+# pay-gsp-pipelines
 
-- Create build pipelines for
-	- pay-cardid
-	- pay-toolbox
-	- pay-connector
-	- pay-ledger
-	- pay-products
-	- pay-direct-debit-connector
-	- pay-direct-debit-frontend
+Infrastructure code for GOV.UK Pay running on a [GSP](https://github.com/alphagov/gsp) cluster.
 
-- Create deployment pipelines for the above
+## Deployment pipelines
 
-# Notes
+Concourse pipelines are defined under `ci/` for each environment.
+The Concourse tasks used in the pipelines have been pulled out into `tasks/`.
 
-Build pipelines should follow the "job" order of:
-- Pull the repo
-- Build the container
-- Deploy charts to kubernetes
-- Run tests
-- Tag for release
+## Helm charts
+
+The Helm charts which defined the deployments are under `charts/`.
+`charts/stubs` defines the deployment of test stubs for running the end-to-end tests.
+`charts/pay` defines the deployment of Pay's microservices.
