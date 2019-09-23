@@ -11,10 +11,8 @@ inputs:
   - name: adminusers-image
   - name: cardid-image
   - name: connector-image
-  - name: demo-service-image
   - name: dd-connector-image
   - name: dd-frontend-image
-  - name: endtoend-image
   - name: frontend-image
   - name: ledger-image
   - name: products-image
@@ -22,7 +20,6 @@ inputs:
   - name: publicapi-image
   - name: publicauth-image
   - name: selfservice-image
-  - name: stubs-image
   - name: toolbox-image
 
 outputs:
