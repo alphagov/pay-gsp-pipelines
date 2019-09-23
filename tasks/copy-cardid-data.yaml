@@ -5,11 +5,11 @@ image_resource:
   source: { repository: alpine }
 
 inputs:
-  - name: pay-cardid-src
-  - name: pay-cardid-data
+  - name: cardid-src
+  - name: cardid-data
 
 outputs:
-  - name: pay-cardid-src
+  - name: cardid-src
 
 run:
   path: ash
@@ -17,5 +17,5 @@ run:
     - -c
     - |
       set -o errexit -o xtrace
-      mkdir -p pay-cardid-src/data
-      cp -r pay-cardid-data/* pay-cardid-src/data/
+      mkdir -p cardid-src/data
+      cp -r cardid-data/* cardid-src/data/

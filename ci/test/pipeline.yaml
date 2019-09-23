@@ -304,12 +304,12 @@ spec:
               type: docker-image
               source: { repository: node }
             inputs:
-              - name: pay-toolbox-src
+              - name: toolbox-src
             outputs:
-              - name: pay-toolbox-src
+              - name: toolbox-src
             run:
               path: bash
-              dir: pay-toolbox-src
+              dir: toolbox-src
               args: [ "./scripts/generate-dev-environment" ]
         - task: test
           file: src/tasks/node-test.yaml
