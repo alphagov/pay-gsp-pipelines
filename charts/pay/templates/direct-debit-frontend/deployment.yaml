@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: direct-debit-frontend
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: direct-debit-frontend
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-direct-debit-frontend
+spec:
+  replicas: {{ .Values.directDebit.frontend.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: direct-debit-frontend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: direct-debit-frontend
+        image: "{{ .Values.directDebit.frontend.image.repository }}:{{ .Values.directDebit.frontend.image.tag }}"
+        imagePullPolicy: {{ .Values.directDebit.frontend.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: ADMINUSERS_URL
+          value: http://adminusers/
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: CONNECTOR_URL
+          value: http://directdebit-connector/
+        - name: NODE_ENV
+          value: production
+        - name: RUN_APP
+          value: "true"
+        - name: SESSION_ENCRYPTION_KEY
+          value: asdjhbwefbo23r23rbfik2roiwhefwbqw
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

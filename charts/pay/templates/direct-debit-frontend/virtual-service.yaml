@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-direct-debit-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ .Release.Name }}-direct-debit-frontend
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  hosts:
+  - {{ include "directDebit.frontend.host" . }}
+  gateways:
+  - gsp-gsp-cluster.gsp-system
+  http:
+    - route:
+      - destination:
+          host: {{ .Release.Name }}-direct-debit-frontend
+          port:
+            number: 80

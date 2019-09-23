@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: frontend
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: frontend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: frontend
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+        imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        env:
+          - name: PORT
+            value: "80"
+          - name: SESSION_ENCRYPTION_KEY
+            value: "asdjhbwefbo23r23rbfik2roiwhefwbqw"
+          - name: COOKIE_MAX_AGE
+            value: "5400000"
+          - name: CONNECTOR_TOKEN_URL
+            value: "http://connector/v1/frontend/tokens/{chargeTokenId}"
+          - name: CONNECTOR_URL
+            value: "http://connector/v1/frontend/charges/{chargeId}"
+          - name: CONNECTOR_HOST
+            value: "http://connector"
+          - name: ANALYTICS_TRACKING_ID
+            value: "testing-123"
+          - name: CARDID_HOST
+            value: "http://cardid"
+          - name: NODE_WORKER_COUNT
+            value: "1"
+          - name: FRONTEND_URL
+            value: "http://frontend/"
+          - name: ADMINUSERS_URL
+            value: "http://adminusers"
+          - name: AWS_XRAY_DAEMON_ADDRESS
+            value: "xray:2000"
+          - name: NODE_WORKER_COUNT
+            value: "1"
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

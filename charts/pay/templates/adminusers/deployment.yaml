@@ -1,0 +1,101 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: adminusers
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: adminusers
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-adminusers
+spec:
+  replicas: {{ .Values.adminUsers.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: adminusers
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: adminusers
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: adminusers
+        image: "{{ .Values.adminUsers.image.repository }}:{{ .Values.adminUsers.image.tag }}"
+        imagePullPolicy: {{ .Values.adminUsers.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: AWS_XRAY_DAEMON_ADDRESS
+          value: xray:2000
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: DB_HOST
+          value: {{ .Release.Name }}-postgresql
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgresql
+              key: postgresql-password
+        - name: DB_USER
+          value: adminusers
+        - name: DB_SSL_OPTION
+          value: "ssl=none"
+        - name: FORGOTTEN_PASSWORD_EXPIRY_MINUTES
+          value: "90"
+        - name: FRONTEND_URL
+          value: http://frontend/
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        - name: JPA_LOG_LEVEL
+          value: WARNING
+        - name: JPA_SQL_LOG_LEVEL
+          value: WARNING
+        - name: LOGIN_ATTEMPT_CAP
+          value: "2"
+        - name: NOTIFY_2FA_TEMPLATE_ID
+          value: pay-notify-two-factor-template-id
+        - name: NOTIFY_API_KEY
+          value: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+        - name: NOTIFY_BASE_URL
+          value: http://stubs/notify
+        - name: NOTIFY_DIRECT_DEBIT_API_KEY
+          value: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+        - name: NOTIFY_FORGOTTEN_PASSWORD_EMAIL_TEMPLATE_ID
+          value: pay-notify-forgotten-password-email-template-id
+        - name: NOTIFY_INVITE_EMAIL_TEMPLATE_ID
+          value: pay-notify-invite-email-template-id
+        - name: NOTIFY_INVITE_SERVICE_EMAIL_TEMPLATE_ID
+          value: pay-notify-invite-service-email-template-id
+        - name: NOTIFY_INVITE_SERVICE_USER_EXITS_EMAIL_TEMPLATE_ID
+          value: pay-notify-invite-service-user-exists-email-template-id
+        - name: NOTIFY_INVITE_USER_EMAIL_TEMPLATE_ID
+          value: pay-notify-invite-user-email-template-id
+        - name: NOTIFY_MANDATE_CANCELLED_EMAIL_TEMPLATE_ID
+          value: email-template-id
+        - name: NOTIFY_MANDATE_FAILED_EMAIL_TEMPLATE_ID
+          value: email-template-id
+        - name: NOTIFY_PAYMENT_CONFIRMED_TEMPLATE_ID
+          value: email-template-id
+        - name: NOTIFY_PAYMENT_FAILED_TEMPLATE_ID
+          value: email-template-id
+        - name: NOTIFY_SECRET
+          value: pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+        - name: NOTIFY_SERVICE_ID
+          value: pay-notify-service-id
+        - name: RUN_APP
+          value: "true"
+        - name: RUN_MIGRATION
+          value: "true"
+        - name: SELFSERVICE_URL
+          value: http://selfservice/
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

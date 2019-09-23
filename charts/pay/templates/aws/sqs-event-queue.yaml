@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: SQS
+apiVersion: queue.govsvc.uk/v1beta1
+metadata:
+  name: {{ .Release.Name }}-event-queue
+  labels:
+    group.access.govsvc.uk: {{ .Release.Name }}-principal
+spec:
+  aws:
+    messageRetentionPeriod: 3600
+    maximumMessageSize: 1024
+  secret: {{ .Release.Name }}-event-queue
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-event-queue
+type: Opaque
+stringData:
+  QueueURL: https://sqs.eu-west-2.amazonaws.com/158085383987/{{ .Values.global.cluster.name }}-{{ .Release.Namespace }}-{{ .Release.Name }}-event-queue

@@ -1,0 +1,83 @@
+adminUsers:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/adminusers
+    tag: latest
+    pullPolicy: IfNotPresent
+
+cardID:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/cardid
+    tag: latest
+    pullPolicy: IfNotPresent
+
+connector:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/connector
+    tag: latest
+    pullPolicy: IfNotPresent
+
+directDebit:
+  connector:
+    replicaCount: 1
+    image:
+      repository: registry.london.portfolio.govsvc.uk/pay/direct-debit-connector
+      tag: latest
+      pullPolicy: IfNotPresent
+
+  frontend:
+    host:
+    replicaCount: 1
+    image:
+      repository: registry.london.portfolio.govsvc.uk/pay/direct-debit-frontend
+      tag: latest
+      pullPolicy: IfNotPresent
+
+frontend:
+  host:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+products:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/products
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  ui:
+    host:
+    replicaCount: 1
+    image:
+      repository: registry.london.portfolio.govsvc.uk/pay/products-ui
+      tag: latest
+      pullPolicy: IfNotPresent
+
+public:
+  api:
+    host:
+    replicaCount: 1
+    image:
+      repository: registry.london.portfolio.govsvc.uk/pay/publicapi
+      tag: latest
+      pullPolicy: IfNotPresent
+
+  auth:
+    replicaCount: 1
+    image:
+      repository: registry.london.portfolio.govsvc.uk/pay/publicauth
+      tag: latest
+      pullPolicy: IfNotPresent
+
+selfService:
+  host:
+  replicaCount: 1
+  image:
+    repository: registry.london.portfolio.govsvc.uk/pay/selfservice
+    tag: latest
+    pullPolicy: IfNotPresent

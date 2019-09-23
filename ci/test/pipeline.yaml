@@ -1,0 +1,540 @@
+---
+apiVersion: concourse.k8s.io/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: build-release
+spec:
+  exposed: true
+  pipelineString: |
+
+    github_source: &github_source
+      uri: https://github.com/alphagov/pay-gsp-pipelines
+      branch: develop
+      username: re-autom8-ci
+      password: ((github.api-token))
+
+    harbor_source: &harbor_source
+      username: ((harbor.harbor_username))
+      password: ((harbor.harbor_password))
+      harbor:
+        url: ((harbor.harbor_url))
+        prevent_vul: "false"
+      notary:
+        url: ((harbor.notary_url))
+        root_key: ((harbor.root_key))
+        delegate_key: ((harbor.ci_key))
+        passphrase:
+          root: ((harbor.notary_root_passphrase))
+          snapshot: ((harbor.notary_snapshot_passphrase))
+          targets: ((harbor.notary_targets_passphrase))
+          delegation: ((harbor.notary_delegation_passphrase))
+
+    resource_types:
+      - name: harbor
+        type: registry-image
+        privileged: true
+        source:
+          repository: govsvc/concourse-harbor-resource
+          tag: "gsp-v1.1.135"
+
+    resources:
+      - name: src
+        type: git
+        icon: github-circle
+        source:
+          <<: *github_source
+          paths:
+            - charts/pay
+
+      - name: chart
+        type: github-release
+        icon: archive
+        source:
+          <<: *github_source
+
+      - name: cardid-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-cardid
+          branch: master
+
+      - name: cardid-data
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-cardid-data
+          username: re-autom8-ci
+          password: ((github.api-token))
+
+      - name: cardid-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/cardid
+
+      - name: frontend-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-frontend
+          branch: master
+
+      - name: frontend-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/frontend
+
+      - name: toolbox-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-toolbox
+          branch: master
+
+      - name: toolbox-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/toolbox
+
+      - name: adminusers-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-adminusers
+          branch: master
+
+      - name: adminusers-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/adminusers
+
+      - name: connector-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-connector
+          branch: master
+
+      - name: connector-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/connector
+
+      - name: ledger-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-ledger
+          branch: master
+
+      - name: ledger-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/ledger
+
+      - name: products-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-products
+          branch: master
+
+      - name: products-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products
+
+      - name: products-ui-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-products-ui
+          branch: master
+
+      - name: products-ui-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products-ui
+
+      - name: selfservice-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-selfservice
+          branch: master
+
+      - name: selfservice-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/selfservice
+
+      - name: publicauth-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-publicauth
+          branch: master
+
+      - name: publicauth-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicauth
+
+      - name: publicapi-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-publicapi
+          branch: master
+
+      - name: publicapi-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicapi
+
+      - name: dd-connector-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-direct-debit-connector
+          branch: master
+
+      - name: dd-connector-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/dd-connector
+
+      - name: dd-frontend-src
+        type: git
+        icon: github-circle
+        source:
+          uri: https://github.com/alphagov/pay-direct-debit-frontend
+          branch: master
+
+      - name: dd-frontend-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/dd-frontend
+
+    jobs:
+      - name: build-cardid
+        plan:
+        - get: src
+        - get: cardid-src
+          trigger: true
+          params:
+            submodules: none
+        - get: cardid-data
+          trigger: true
+        - task: copy-cardid-data
+          file: src/tasks/copy-cardid-data.yaml
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: cardid-src }
+        - put: pay-cardid-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-frontend
+        plan:
+        - get: src
+        - get: frontend-src
+          trigger: true
+        - task: test
+          file: src/tasks/frontend.yaml
+          input_mapping: { src: frontend-src }
+        - put: pay-frontend-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-toolbox
+        plan:
+        - get: src
+        - get: toolbox-src
+          trigger: true
+        - task: env-file
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source: { repository: node }
+            inputs:
+              - name: pay-toolbox-src
+            outputs:
+              - name: pay-toolbox-src
+            run:
+              path: bash
+              dir: pay-toolbox-src
+              args: [ "./scripts/generate-dev-environment" ]
+        - task: test
+          file: src/tasks/node-test.yaml
+          input_mapping: { src: toolbox-src }
+        - put: pay-toolbox-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-adminusers
+        plan:
+        - get: src
+        - get: adminusers-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: adminusers-src }
+        - put: pay-adminusers-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-connector
+        plan:
+        - get: src
+        - get: connector-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: connector-src }
+        - put: pay-connector-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-ledger
+        plan:
+        - get: src
+        - get: ledger-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: ledger-src }
+        - put: pay-ledger-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-products
+        plan:
+        - get: src
+        - get: products-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: products-src }
+        - put: pay-products-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-products-ui
+        plan:
+        - get: src
+        - get: products-ui-src
+          trigger: true
+        - task: test
+          file: src/tasks/frontend.yaml
+          input_mapping: { src: products-ui-src }
+        - put: pay-products-ui-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-selfservice
+        plan:
+        - get: src
+        - get: selfservice-src
+          trigger: true
+        - task: test
+          file: src/tasks/frontend.yaml
+          input_mapping: { src: selfservice-src }
+        - put: pay-selfservice-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-publicauth
+        plan:
+        - get: src
+        - get: publicauth-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: publicauth-src }
+        - put: pay-publicauth-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-publicapi
+        plan:
+        - get: src
+        - get: publicapi-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: publicapi-src }
+        - put: pay-publicapi-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-dd-connector
+        plan:
+        - get: src
+        - get: dd-connector-src
+          trigger: true
+        - task: build
+          file: src/tasks/maven-build.yaml
+          input_mapping: { src: dd-connector-src }
+        - put: pay-dd-connector-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: build-dd-frontend
+        plan:
+        - get: src
+        - get: dd-frontend-src
+          trigger: true
+        - task: test
+          file: src/tasks/frontend.yaml
+          input_mapping: { src: dd-frontend-src }
+        - put: pay-dd-frontend-image
+          params:
+            build: src
+            tag_as_latest: true
+
+      - name: release
+        serial: true
+        serial_groups: [deploy-in-progress]
+        plan:
+        - get: src
+        - get: adminusers-image
+          passed: [build-adminusers]
+          params: { skip_download: true }
+        - get: cardid-image
+          passed: [build-cardid]
+          params: { skip_download: true }
+        - get: connector-image
+          passed: [build-connector]
+          params: { skip_download: true }
+        - get: demo-service-image
+          passed: [build-demo-service]
+          params: { skip_download: true }
+        - get: dd-connector-image
+          passed: [build-dd-connector]
+          params: { skip_download: true }
+        - get: dd-frontend-image
+          passed: [build-dd-frontend]
+          params: { skip_download: true }
+        - get: endtoend-image
+          passed: [build-endtoend]
+          params: { skip_download: true }
+        - get: frontend-image
+          passed: [build-frontend]
+          params: { skip_download: true }
+        - get: ledger-image
+          passed: [build-ledger]
+          params: { skip_download: true }
+        - get: products-image
+          passed: [build-products]
+          params: { skip_download: true }
+        - get: products-ui-image
+          passed: [build-products-ui]
+          params: { skip_download: true }
+        - get: publicapi-image
+          passed: [build-publicapi]
+          params: { skip_download: true }
+        - get: publicauth-image
+          passed: [build-publicauth]
+          params: { skip_download: true }
+        - get: selfservice-image
+          passed: [build-selfservice]
+          params: { skip_download: true }
+        - get: stubs-image
+          passed: [build-stubs]
+          params: { skip_download: true }
+        - get: toolbox-image
+          passed: [build-toolbox]
+          params: { skip_download: true }
+
+        - task: update-app-versions
+          file: src/tasks/update-app-versions-pay.yaml
+
+        - task: helm-package
+          file: src/tasks/helm-package.yaml
+          vars:
+            chart_name: pay
+
+        - put: chart
+          params:
+            name: chart-version/name
+            tag: chart-version/tag
+            globs:
+              - chart-package/*
+
+      - name: deploy
+        serial: true
+        plan:
+          - get: src
+            passed: [release]
+          - get: chart
+            passed: [release]
+            trigger: true
+          - task: helm-render
+            file: src/tasks/helm-render.yaml
+            vars:
+              release_name: pay
+          - task: deploy
+            file: src/tasks/deploy.yaml
+            vars:
+              release_name: pay
+
+      - name: end-to-end
+        serial: true
+        serial_groups: [deploy-in-progress]
+        plan:
+        - get: src
+          passed: [deploy]
+        - task: card-tests
+          file: src/tasks/endtoend.yaml
+          vars:
+            suite: card
+        - task: directdebit-tests
+          file: src/tasks/endtoend.yaml
+          vars:
+            suite: directdebit
+        - task: products-tests
+          file: src/tasks/endtoend.yaml
+          vars:
+            suite: products

@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ .Release.Name }}-connector-sqs-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: connector
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  hosts:
+  - sqs.eu-west-2.amazonaws.com
+  ports:
+  - name: https
+    number: 443
+    protocol: TLS
+  location: MESH_EXTERNAL
+  resolution: DNS

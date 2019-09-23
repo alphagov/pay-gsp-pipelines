@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: public-auth
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: public-auth
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-public-auth
+spec:
+  replicas: {{ .Values.public.auth.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: public-auth
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: public-auth
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: public-auth
+        image: "{{ .Values.public.auth.image.repository }}:{{ .Values.public.auth.image.tag }}"
+        imagePullPolicy: {{ .Values.public.auth.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: AWS_XRAY_DAEMON_ADDRESS
+          value: xray:2000
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: DB_HOST
+          value: {{ .Release.Name }}-postgresql
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgresql
+              key: postgresql-password
+        - name: DB_USER
+          value: publicauth
+        - name: DB_SSL_OPTION
+          value: "ssl=none"
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        - name: RUN_APP
+          value: "true"
+        - name: RUN_MIGRATION
+          value: "true"
+        - name: TOKEN_API_HMAC_SECRET
+          value: qwer9yuhgf
+        - name: TOKEN_DB_BCRYPT_SALT
+          value: "$2a$10$IhaXo6LIBhKIWOiGpbtPOu"
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

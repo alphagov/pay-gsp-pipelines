@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: products-ui
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: products-ui
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-products-ui
+spec:
+  replicas: {{ .Values.products.ui.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: products-ui
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: products-ui
+        image: "{{ .Values.products.ui.image.repository }}:{{ .Values.products.ui.image.tag }}"
+        imagePullPolicy: {{ .Values.products.ui.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: ADMINUSERS_URL
+          value: http://adminusers/
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: COOKIE_MAX_AGE
+          value: "3600000"
+        - name: NODE_ENV
+          value: production
+        - name: PRODUCTS_API_TOKEN
+          value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+        - name: PRODUCTS_URL
+          value: http://products/
+        - name: RUN_APP
+          value: "true"
+        - name: SELFSERVICE_TRANSACTIONS_URL
+          value: http://selfservice/transactions
+        - name: SESSION_ENCRYPTION_KEY
+          value: asdjhbwefbo23r23rbfik2roiwhefwbqw
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

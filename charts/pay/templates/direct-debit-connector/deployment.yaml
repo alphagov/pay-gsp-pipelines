@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: direct-debit-connector
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: direct-debit-connector
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-direct-debit-connector
+spec:
+  replicas: {{ .Values.directDebit.connector.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: direct-debit-connector
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: direct-debit-connector
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: direct-debit-connector
+        image: "{{ .Values.directDebit.connector.image.repository }}:{{ .Values.directDebit.connector.image.tag }}"
+        imagePullPolicy: {{ .Values.directDebit.connector.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: ADMINUSERS_URL
+          value: http://adminusers/
+        - name: AUTH_READ_TIMEOUT_SECONDS
+          value: "1"
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: DB_HOST
+          value: {{ .Release.Name }}-postgresql
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgresql
+              key: postgresql-password
+        - name: DB_USER
+          value: directdebit_connector
+        - name: DB_SSL_OPTION
+          value: "ssl=none"
+        - name: FRONTEND_URL
+          value: http://directdebit-frontend/
+        - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ACCESS_TOKEN
+          value: supersecret
+        - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ENVIRONMENT
+          value: sandbox
+        - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_URL
+          value: http://stubs/stub/gocardless/
+        - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_WEBHOOK_SECRET
+          value: supersecret
+        - name: GOCARDLESS_LIVE_CLIENT_ID
+          value: gocardless-live-oauth-client-id
+        - name: GOCARDLESS_LIVE_CLIENT_SECRET
+          value: gocardless-live-oauth-client-secret
+        - name: GOCARDLESS_LIVE_OAUTH_BASE_URL
+          value: https://connect-sandbox.gocardless.com
+        - name: GOCARDLESS_TEST_CLIENT_ID
+          value: gocardless-test-oauth-client-id
+        - name: GOCARDLESS_TEST_CLIENT_SECRET
+          value: gocardless-test-oauth-client-secret
+        - name: GOCARDLESS_TEST_OAUTH_BASE_URL
+          value: https://connect-sandbox.gocardless.com
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        - name: JPA_LOG_LEVEL
+          value: WARNING
+        - name: JPA_SQL_LOG_LEVEL
+          value: WARNING
+        - name: RUN_APP
+          value: "true"
+        - name: RUN_MIGRATION
+          value: "true"
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

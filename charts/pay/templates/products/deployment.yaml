@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: products
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: products
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-products
+spec:
+  replicas: {{ .Values.products.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: products
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: products
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: products
+        image: "{{ .Values.products.image.repository }}:{{ .Values.products.image.tag }}"
+        imagePullPolicy: {{ .Values.products.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: BASE_URL
+          value: http://products/
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: DB_HOST
+          value: {{ .Release.Name }}-postgresql
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgresql
+              key: postgresql-password
+        - name: DB_USER
+          value: products
+        - name: DB_SSL_OPTION
+          value: "ssl=none"
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        - name: JPA_LOG_LEVEL
+          value: WARNING
+        - name: JPA_SQL_LOG_LEVEL
+          value: WARNING
+        - name: PRODUCTSUI_CONFIRMATION_URL
+          value: http://productsui/payment-complete
+        - name: PRODUCTSUI_PAY_URL
+          value: http://productsui/pay
+        - name: PRODUCTS_API_TOKEN
+          value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+        - name: PRODUCTS_FRIENDLY_BASE_URI
+          value: http://productsui/redirect
+        - name: PUBLICAPI_URL
+          value: http://publicapi/
+        - name: RUN_APP
+          value: "true"
+        - name: RUN_MIGRATION
+          value: "true"
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

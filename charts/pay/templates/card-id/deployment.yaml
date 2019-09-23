@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: card-id
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: card-id
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-card-id
+spec:
+  replicas: {{ .Values.cardID.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: card-id
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: card-id
+        image: "{{ .Values.cardID.image.repository }}:{{ .Values.cardID.image.tag }}"
+        imagePullPolicy: {{ .Values.cardID.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: AWS_XRAY_DAEMON_ADDRESS
+          value: xray:2000
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        image: "{{ .Values.cardID.image.repository }}:{{ .Values.cardID.image.tag }}"
+        imagePullPolicy: {{ .Values.cardID.image.pullPolicy }}
+        name: card-id
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

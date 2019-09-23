@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-self-service
+  labels:
+    app.kubernetes.io/name: self-service
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: http-app
+    port: 80
+    targetPort: app
+  - name: http-admin
+    port: 8081
+    targetPort: admin
+  selector:
+    app.kubernetes.io/name: self-service
+    app.kubernetes.io/instance: {{ .Release.Name }}

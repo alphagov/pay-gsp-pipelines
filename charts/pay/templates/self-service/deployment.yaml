@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: self-service
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: self-service
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-self-service
+spec:
+  replicas: {{ .Values.selfService.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: self-service
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: self-service
+        image: "{{ .Values.selfService.image.repository }}:{{ .Values.selfService.image.tag }}"
+        imagePullPolicy: {{ .Values.selfService.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: ADMINUSERS_URL
+          value: http://adminusers/
+        - name: AWS_XRAY_DAEMON_ADDRESS
+          value: xray:2000
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: CONNECTOR_URL
+          value: http://connector/
+        - name: COOKIE_MAX_AGE
+          value: "10800000"
+        - name: DIRECT_DEBIT_CONNECTOR_URL
+          value: http://directdebit-connector/
+        - name: EPDQ_3DS_ENABLED
+          value: "true"
+        - name: GOCARDLESS_LIVE_CLIENT_ID
+          value: gocardless-live-oauth-client-id
+        - name: GOCARDLESS_LIVE_OAUTH_BASE_URL
+          value: https://connect-sandbox.gocardless.com
+        - name: GOCARDLESS_TEST_CLIENT_ID
+          value: gocardless-test-oauth-client-id
+        - name: GOCARDLESS_TEST_OAUTH_BASE_URL
+          value: https://connect-sandbox.gocardless.com
+        - name: LOGIN_ATTEMPT_CAP
+          value: "3"
+        - name: NODE_ENV
+          value: production
+        - name: NODE_WORKER_COUNT
+          value: "1"
+        - name: NO_PROXY
+          value: comma
+        - name: PGSSLMODE
+          value: verify-full
+        - name: PRODUCTS_API_TOKEN
+          value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+        - name: PRODUCTS_FRIENDLY_BASE_URI
+          value: http://productsui/redirect
+        - name: PRODUCTS_URL
+          value: http://products/
+        - name: RUN_APP
+          value: "true"
+        - name: SELFSERVICE_BASE
+          value: http://selfservice/
+        - name: SELFSERVICE_URL
+          value: http://selfservice/
+        - name: SMARTPAY_3DS_ENABLED
+          value: "true"
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

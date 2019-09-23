@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: public-api
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: public-api
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-public-api
+spec:
+  replicas: {{ .Values.public.api.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: public-api
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: public-api
+        image: "{{ .Values.public.api.image.repository }}:{{ .Values.public.api.image.tag }}"
+        imagePullPolicy: {{ .Values.public.api.image.pullPolicy }}
+        env:
+        - name: PORT
+          value: "80"
+        - name: AWS_XRAY_DAEMON_ADDRESS
+          value: xray:2000
+        - name: CERTS_PATH
+          value: /ssl/certs
+        - name: CONNECTOR_DD_URL
+          value: http://directdebit-connector/
+        - name: CONNECTOR_URL
+          value: http://connector/
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx1G
+        - name: PUBLICAPI_BASE
+          value: http://publicapi/
+        - name: PUBLIC_AUTH_URL
+          value: http://publicauth/v1/api/auth
+        - name: TOKEN_API_HMAC_SECRET
+          value: qwer9yuhgf
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always
