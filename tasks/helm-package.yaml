@@ -40,7 +40,7 @@ run:
 
     mkdir -p chart-package chart-version
     echo "$CHART_NAME" > chart-version/name
-    echo "$CHART_VERSION" > chart-version/version
+    echo "$CHART_VERSION" > chart-version/tag
 
     echo "generating signed (${KEY_ID}) helm package for ${CHART_NAME} at app-version: '${APP_VERSION}' chart-version: '${CHART_VERSION}'..."
     helm package \

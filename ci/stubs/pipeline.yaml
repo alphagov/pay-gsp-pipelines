@@ -48,6 +48,15 @@ spec:
           paths:
             - charts/stubs
 
+      - name: chart
+        type: github-release
+        icon: archive
+        source:
+          <<: *github_source
+          tag_filter: "stubs-v?([^v].*)"
+          release: false
+          pre_release: true
+
       - name: endtoend-src
         type: git
         icon: github-circle
@@ -95,12 +104,6 @@ spec:
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/demo-service
-
-      - name: chart
-        type: github-release
-        icon: archive
-        source:
-          <<: *github_source
 
     jobs:
       - name: build-endtoend
@@ -197,6 +200,7 @@ spec:
           params:
             name: chart-version/name
             tag: chart-version/tag
+            tag_prefix: stubs-
             globs:
               - chart-package/*
 

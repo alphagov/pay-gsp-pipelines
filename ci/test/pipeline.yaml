@@ -53,6 +53,18 @@ spec:
         icon: archive
         source:
           <<: *github_source
+          tag_filter: "pay-rc-v?([^v].*)"
+          release: false
+          pre_release: true
+
+      - name: release
+        type: github-release
+        icon: archive
+        source:
+          <<: *github_source
+          tag_filter: "pay-v?([^v].*)"
+          release: false
+          pre_release: true
 
       - name: cardid-src
         type: git
@@ -246,6 +258,7 @@ spec:
 
     jobs:
       - name: build-cardid
+        serial_groups: [cardid]
         plan:
         - get: src
         - get: cardid-src
@@ -265,6 +278,7 @@ spec:
             tag_as_latest: true
 
       - name: build-frontend
+        serial_groups: [frontend]
         plan:
         - get: src
         - get: frontend-src
@@ -278,6 +292,7 @@ spec:
             tag_as_latest: true
 
       - name: build-toolbox
+        serial_groups: [toolbox]
         plan:
         - get: src
         - get: toolbox-src
@@ -305,6 +320,7 @@ spec:
             tag_as_latest: true
 
       - name: build-adminusers
+        serial_groups: [adminusers]
         plan:
         - get: src
         - get: adminusers-src
@@ -318,6 +334,7 @@ spec:
             tag_as_latest: true
 
       - name: build-connector
+        serial_groups: [connector]
         plan:
         - get: src
         - get: connector-src
@@ -331,6 +348,7 @@ spec:
             tag_as_latest: true
 
       - name: build-ledger
+        serial_groups: [ledger]
         plan:
         - get: src
         - get: ledger-src
@@ -344,6 +362,7 @@ spec:
             tag_as_latest: true
 
       - name: build-products
+        serial_groups: [products]
         plan:
         - get: src
         - get: products-src
@@ -357,6 +376,7 @@ spec:
             tag_as_latest: true
 
       - name: build-products-ui
+        serial_groups: [products-ui]
         plan:
         - get: src
         - get: products-ui-src
@@ -370,6 +390,7 @@ spec:
             tag_as_latest: true
 
       - name: build-selfservice
+        serial_groups: [selfservice]
         plan:
         - get: src
         - get: selfservice-src
@@ -383,6 +404,7 @@ spec:
             tag_as_latest: true
 
       - name: build-publicauth
+        serial_groups: [publicauth]
         plan:
         - get: src
         - get: publicauth-src
@@ -396,6 +418,7 @@ spec:
             tag_as_latest: true
 
       - name: build-publicapi
+        serial_groups: [publicapi]
         plan:
         - get: src
         - get: publicapi-src
@@ -409,6 +432,7 @@ spec:
             tag_as_latest: true
 
       - name: build-dd-connector
+        serial_groups: [dd-connector]
         plan:
         - get: src
         - get: dd-connector-src
@@ -422,6 +446,7 @@ spec:
             tag_as_latest: true
 
       - name: build-dd-frontend
+        serial_groups: [dd-frontend]
         plan:
         - get: src
         - get: dd-frontend-src
@@ -435,58 +460,86 @@ spec:
             tag_as_latest: true
 
       - name: release
-        serial: true
-        serial_groups: [deploy-in-progress]
+        serial_groups:
+          - cardid
+          - frontend
+          - toolbox
+          - adminusers
+          - connector
+          - ledger
+          - products
+          - products-ui
+          - selfservice
+          - publicauth
+          - publicapi
+          - dd-connector
+          - dd-frontend
         plan:
         - get: src
         - get: adminusers-image
           passed: [build-adminusers]
           params: { skip_download: true }
+          trigger: true
         - get: cardid-image
           passed: [build-cardid]
           params: { skip_download: true }
+          trigger: true
         - get: connector-image
           passed: [build-connector]
           params: { skip_download: true }
+          trigger: true
         - get: demo-service-image
           passed: [build-demo-service]
           params: { skip_download: true }
+          trigger: true
         - get: dd-connector-image
           passed: [build-dd-connector]
           params: { skip_download: true }
+          trigger: true
         - get: dd-frontend-image
           passed: [build-dd-frontend]
           params: { skip_download: true }
+          trigger: true
         - get: endtoend-image
           passed: [build-endtoend]
           params: { skip_download: true }
+          trigger: true
         - get: frontend-image
           passed: [build-frontend]
           params: { skip_download: true }
+          trigger: true
         - get: ledger-image
           passed: [build-ledger]
           params: { skip_download: true }
+          trigger: true
         - get: products-image
           passed: [build-products]
           params: { skip_download: true }
+          trigger: true
         - get: products-ui-image
           passed: [build-products-ui]
           params: { skip_download: true }
+          trigger: true
         - get: publicapi-image
           passed: [build-publicapi]
           params: { skip_download: true }
+          trigger: true
         - get: publicauth-image
           passed: [build-publicauth]
           params: { skip_download: true }
+          trigger: true
         - get: selfservice-image
           passed: [build-selfservice]
           params: { skip_download: true }
+          trigger: true
         - get: stubs-image
           passed: [build-stubs]
           params: { skip_download: true }
+          trigger: true
         - get: toolbox-image
           passed: [build-toolbox]
           params: { skip_download: true }
+          trigger: true
 
         - task: update-app-versions
           file: src/tasks/update-app-versions-pay.yaml
@@ -500,11 +553,13 @@ spec:
           params:
             name: chart-version/name
             tag: chart-version/tag
+            tag_prefix: pay-rc-
             globs:
               - chart-package/*
 
       - name: deploy
         serial: true
+        serial_groups: [deploy-in-progress]
         plan:
           - get: src
             passed: [release]
@@ -521,11 +576,13 @@ spec:
               release_name: pay
 
       - name: end-to-end
-        serial: true
         serial_groups: [deploy-in-progress]
         plan:
         - get: src
           passed: [deploy]
+        - get: chart
+          passed: [deploy]
+          trigger: true
         - task: card-tests
           file: src/tasks/endtoend.yaml
           vars:
@@ -538,3 +595,15 @@ spec:
           file: src/tasks/endtoend.yaml
           vars:
             suite: products
+
+      - name: release
+        plan:
+        - get: chart
+          passed: [end-to-end]
+          trigger: true
+        - put: release
+          params:
+            name: chart/tag
+            tag: chart/tag
+            globs:
+              - chart/*

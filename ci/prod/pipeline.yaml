@@ -1,0 +1,74 @@
+---
+apiVersion: concourse.k8s.io/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: build-release
+spec:
+  exposed: true
+  pipelineString: |
+
+    github_source: &github_source
+      uri: https://github.com/alphagov/pay-gsp-pipelines
+      branch: develop
+      username: re-autom8-ci
+      password: ((github.api-token))
+
+    harbor_source: &harbor_source
+      username: ((harbor.harbor_username))
+      password: ((harbor.harbor_password))
+      harbor:
+        url: ((harbor.harbor_url))
+        prevent_vul: "false"
+      notary:
+        url: ((harbor.notary_url))
+        root_key: ((harbor.root_key))
+        delegate_key: ((harbor.ci_key))
+        passphrase:
+          root: ((harbor.notary_root_passphrase))
+          snapshot: ((harbor.notary_snapshot_passphrase))
+          targets: ((harbor.notary_targets_passphrase))
+          delegation: ((harbor.notary_delegation_passphrase))
+
+    resource_types:
+      - name: harbor
+        type: registry-image
+        privileged: true
+        source:
+          repository: govsvc/concourse-harbor-resource
+          tag: "gsp-v1.1.135"
+
+    resources:
+      - name: src
+        type: git
+        icon: github-circle
+        source:
+          <<: *github_source
+          paths:
+            - charts/pay
+
+      - name: release
+        type: github-release
+        icon: archive
+        source:
+          <<: *github_source
+          tag_filter: "pay-v?([^v].*)"
+          release: false
+          pre_release: true
+
+    jobs:
+      - name: deploy
+        serial: true
+        plan:
+          - get: src
+          - get: release
+            trigger: true
+          - task: helm-render
+            file: src/tasks/helm-render.yaml
+            vars:
+              release_name: pay
+          - task: deploy
+            file: src/tasks/deploy.yaml
+            vars:
+              release_name: pay
