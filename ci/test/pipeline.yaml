@@ -59,7 +59,7 @@ spec:
         icon: archive
         source:
           <<: *github_source
-          tag_filter: "pay-rc-v?([^v].*)"
+          tag_filter: "pay-v?([^v].*)"
           release: false
           pre_release: true
 
@@ -69,8 +69,8 @@ spec:
         source:
           <<: *github_source
           tag_filter: "pay-v?([^v].*)"
-          release: false
-          pre_release: true
+          release: true
+          pre_release: false
 
       - name: cardid-src
         type: git
@@ -552,7 +552,7 @@ spec:
           params:
             name: chart-version/name
             tag: chart-version/tag
-            tag_prefix: pay-rc-
+            tag_prefix: pay-
             globs:
               - chart-package/*
 

@@ -60,8 +60,8 @@ spec:
         source:
           <<: *github_source
           tag_filter: "pay-v?([^v].*)"
-          release: false
-          pre_release: true
+          release: true
+          pre_release: false
 
     jobs:
       - name: deploy
