@@ -1,0 +1,109 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: endtoend
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: endtoend
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-endtoend
+spec:
+  replicas: {{ .Values.endtoend.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: endtoend
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: endtoend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: endtoend
+        image: "{{ .Values.endtoend.image.repository }}:{{ .Values.endtoend.image.tag }}"
+        imagePullPolicy: {{ .Values.endtoend.image.pullPolicy }}
+        env:
+          - name: DB_CONNECTOR_HOST
+            value: {{ .Release.Name }}-postgresql
+          - name: DB_CONNECTOR_USER
+            value: connector
+          - name: DB_DIRECT_DEBIT_CONNECTOR_HOST
+            value: {{ .Release.Name }}-postgresql
+          - name: DB_DIRECT_DEBIT_CONNECTOR_USER
+            value: directdebit_connector
+          - name: DB_PUBLICAUTH_HOST
+            value: {{ .Release.Name }}-postgresql
+          - name: DB_PUBLICAUTH_USER
+            value: publicauth
+          - name: DB_ADMINUSERS_HOST
+            value: {{ .Release.Name }}-postgresql
+          - name: DB_ADMINUSERS_USER
+            value: adminusers
+          - name: DB_PRODUCTS_HOST
+            value: {{ .Release.Name }}-postgresql
+          - name: DB_PRODUCTS_USER
+            value: products
+          - name: DB_PASSWORD
+            value: mysecretpassword
+          - name: DEMOSERVICE_PAYSTART_URL
+            value: http://{{ .Release.Name }}-demo-service
+          - name: PUBLICAPI_URL
+            value: http://{{ .Release.Name }}-public-api
+          - name: PUBLIC_AUTH_URL
+            value: http://{{ .Release.Name }}-public-auth
+          - name: TEST_GATEWAY_ACCOUNT_ID
+            value: "111"
+          - name: CONNECTOR_URL
+            value: http://{{ .Release.Name }}-connector
+          - name: DIRECT_DEBIT_CONNECTOR_URL
+            value: http://{{ .Release.Name }}-direct-debit-connector
+          - name: ADMINUSERS_URL
+            value: http://{{ .Release.Name }}-adminusers
+          - name: SELFSERVICE_URL
+            value: http://{{ .Release.Name }}-self-service
+          - name: SELFSERVICE_USERNAME
+            value: alice.111@mail.fake
+          - name: SELFSERVICE_PASSWORD
+            value: arandompassword
+          - name: SELFSERVICE_OTP_KEY
+            value: 55w7bwl169
+          - name: STUBS_URL
+            value: http://{{ .Release.Name }}-stubs
+          - name: DB_SETUP_FOR_SMOKE
+            value: "true"
+          - name: FRONTEND_URL
+            value: http://{{ .Release.Name }}-frontend
+          - name: ADMIN_USERS_URL
+            value: http://{{ .Release.Name }}-adminusers
+          - name: NOTIFICATIONS_URL
+            value: http://{{ .Release.Name }}-notifications
+          - name: PRODUCTS_URL
+            value: http://{{ .Release.Name }}-products
+          - name: PRODUCTS_UI_URL
+            value: http://{{ .Release.Name }}-products-ui
+          - name: PRODUCTS_API_TOKEN
+            value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+          - name: HTTP_ZAP_ENABLED
+            value: "false"
+          - name: HTTP_ZAP_HOST
+            value: {{ .Release.Name }}-zap
+          - name: HTTP_ZAP_PORT
+            value: "8080"
+          - name: HTTP_ZAP_SCHEME
+            value: http
+          - name: WEB_DRIVER
+            value: CHROME_REMOTE
+          - name: SELENIUM_HUB_URL
+            value: http://{{ .Release.Name }}-selenium-hub
+          - name: CHROME_DRIVER_PATH
+            value: /usr/bin/chromedriver
+          - name: CHROMEDRIVER.PATH
+            value: /usr/bin/chromedriver
+          - name: CHROMEDRIVER_VERBOSE
+            value: "{{ .Values.endtoend.verbose }}"
+        resources: {}
+      restartPolicy: Always

@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: demo-service
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: demo-service
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-demo-service
+spec:
+  replicas: {{ .Values.demoService.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: demo-service
+        release: {{ .Release.Name }}
+        requires: db
+        app.kubernetes.io/name: demo-service
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: demo-service
+        image: "{{ .Values.demoService.image.repository }}:{{ .Values.demoService.image.tag }}"
+        imagePullPolicy: {{ .Values.demoService.image.pullPolicy }}
+        env:
+          - name: PORT
+            value: "80"
+          - name: PUBLICAPI_URL
+            value: http://public-api
+          - name: PAY_API_URL
+            value: http://public-api
+        resources: {}
+        ports:
+          - name: app
+            containerPort: 80
+          - name: admin
+            containerPort: 8081
+      restartPolicy: Always

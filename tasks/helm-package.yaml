@@ -1,0 +1,53 @@
+# Concourse task to package a set of Helm charts
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: govsvc/task-toolbox
+    tag: latest
+
+inputs:
+- name: src
+
+outputs:
+- name: chart-package
+- name: chart-version
+
+params:
+  CHART_NAME: ((chart_name))
+  CLUSTER_NAME: ((cluster.name))
+  CLUSTER_DOMAIN: ((cluster.domain))
+  CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
+  RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+
+run:
+  path: /bin/bash
+  args:
+  - -xc
+  - |
+    set -o errexit -o nounset -o pipefail
+
+    echo "preparing keyring..."
+    echo "${CLUSTER_PRIVATE_KEY}" > key
+    gpg --import key
+    gpg --export-secret-keys > ~/.gnupg/pubring.gpg
+    KEY_ID="$(gpg --list-secret-keys --with-colons  | awk -F: '/uid:/ {print $10}' | head -n1)"
+
+    APP_VERSION=$(git rev-parse --short HEAD)
+    CHART_VERSION="1.0.0-sha$APP_VERSION"
+
+    mkdir -p chart-package chart-version
+    echo "$CHART_NAME" > chart-version/name
+    echo "$CHART_VERSION" > chart-version/version
+
+    echo "generating signed (${KEY_ID}) helm package for ${CHART_NAME} at app-version: '${APP_VERSION}' chart-version: '${CHART_VERSION}'..."
+    helm package \
+      --app-version "${APP_VERSION}" \
+      --version "${CHART_VERSION}" \
+      --destination "./chart-package/" \
+      --save=false \
+      --sign \
+      --key "${KEY_ID}" \
+      "./src/charts/${CHART_NAME}"

@@ -1,0 +1,49 @@
+# Concourse task to render Helm charts from a chart package
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: govsvc/task-toolbox
+    tag: latest
+
+inputs:
+- name: chart
+
+outputs:
+- name: manifests
+
+params:
+  CLUSTER_NAME: ((cluster.name))
+  CLUSTER_DOMAIN: ((cluster.domain))
+  CLUSTER_PRIVATE_KEY: ((cluster.privateKey))
+  RELEASE_NAMESPACE: ((namespace-deployer.namespace))
+  RELEASE_NAME: ((release_name))
+
+run:
+  path: /bin/bash
+  args:
+  - -xc
+  - |
+    set -o errexit -o nounset -o pipefail
+
+    echo "preparing keyring..."
+    echo "${CLUSTER_PRIVATE_KEY}" > key
+    gpg --import key
+    gpg --export-secret-keys > ~/.gnupg/pubring.gpg
+    KEY_ID="$(gpg --list-secret-keys --with-colons  | awk -F: '/uid:/ {print $10}' | head -n1)"
+
+    echo "verifying package signature..."
+    helm verify ./chart/*.tgz
+    echo "OK!"
+
+    echo "rendering chart with release name '${RELEASE_NAME}' and namespace '${RELEASE_NAMESPACE}'..."
+    helm template \
+      --name "${RELEASE_NAME}" \
+      --namespace "${RELEASE_NAMESPACE}" \
+      --set "global.version=$(cat chart/version)" \
+      --set "global.cluster.name=${CLUSTER_NAME}" \
+      --set "global.cluster.domain=${CLUSTER_DOMAIN}" \
+      --output-dir "./manifests/" \
+      ./chart/*.tgz

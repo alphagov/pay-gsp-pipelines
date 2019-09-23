@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: postgresql
+    release: {{ .Release.Name }}
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-postgresql
+spec:
+  replicas: {{ .Values.postgresql.replicaCount }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        release: {{ .Release.Name }}
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+        imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+        resources: {}
+        ports:
+          - name: postgres
+            containerPort: 5432
+        volumeMounts:
+          - name: initdb-volume
+            mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: initdb-volume
+        configMap:
+          name: {{ .Release.Name }}-postgresql-initdb
+      restartPolicy: Always
