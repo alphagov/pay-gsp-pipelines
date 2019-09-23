@@ -564,6 +564,8 @@ spec:
           - get: chart
             passed: [package]
             trigger: true
+          - task: test-db-creds
+            file: src/tasks/test-db-creds.yaml
           - task: helm-render
             file: src/tasks/helm-render.yaml
             vars:

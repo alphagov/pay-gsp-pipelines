@@ -10,6 +10,8 @@ image_resource:
 
 inputs:
 - name: chart
+- name: values
+  optional: true
 
 outputs:
 - name: manifests
@@ -38,6 +40,12 @@ run:
     helm verify ./chart/*.tgz
     echo "OK!"
 
+    touch extra_values.yaml
+
+    if test -d values; then
+      cat values/*.yaml > extra_values.yaml
+    fi
+
     echo "rendering chart with release name '${RELEASE_NAME}' and namespace '${RELEASE_NAMESPACE}'..."
     helm template \
       --name "${RELEASE_NAME}" \
@@ -45,5 +53,6 @@ run:
       --set "global.version=$(cat chart/version)" \
       --set "global.cluster.name=${CLUSTER_NAME}" \
       --set "global.cluster.domain=${CLUSTER_DOMAIN}" \
+      --values extra_values.yaml \
       --output-dir "./manifests/" \
       ./chart/*.tgz

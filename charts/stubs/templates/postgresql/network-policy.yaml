@@ -17,10 +17,17 @@ spec:
   - Ingress
   ingress:
     - from:
+      # pods in this namespace
       - podSelector:
           matchLabels:
             requires: db
-            app.kubernetes.io/instance: {{ .Release.Name }}
+      # pods in the test namespace
+      - podSelector:
+          matchLabels:
+            requires: db
+        namespaceSelector:
+          matchLabels:
+            namespace: portfolio-pay-test
       ports:
       - protocol: TCP
         port: 5432

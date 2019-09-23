@@ -34,12 +34,9 @@ spec:
         - name: CERTS_PATH
           value: /ssl/certs
         - name: DB_HOST
-          value: {{ .Release.Name }}-postgresql
+          value: {{ .Values.db.host }}
         - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-postgresql
-              key: postgresql-password
+          value: {{ .Values.db.password }}
         - name: DB_USER
           value: products
         - name: DB_SSL_OPTION
