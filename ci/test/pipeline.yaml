@@ -459,7 +459,7 @@ spec:
             build: src
             tag_as_latest: true
 
-      - name: release
+      - name: package
         serial_groups:
           - cardid
           - frontend
@@ -488,20 +488,12 @@ spec:
           passed: [build-connector]
           params: { skip_download: true }
           trigger: true
-        - get: demo-service-image
-          passed: [build-demo-service]
-          params: { skip_download: true }
-          trigger: true
         - get: dd-connector-image
           passed: [build-dd-connector]
           params: { skip_download: true }
           trigger: true
         - get: dd-frontend-image
           passed: [build-dd-frontend]
-          params: { skip_download: true }
-          trigger: true
-        - get: endtoend-image
-          passed: [build-endtoend]
           params: { skip_download: true }
           trigger: true
         - get: frontend-image
@@ -530,10 +522,6 @@ spec:
           trigger: true
         - get: selfservice-image
           passed: [build-selfservice]
-          params: { skip_download: true }
-          trigger: true
-        - get: stubs-image
-          passed: [build-stubs]
           params: { skip_download: true }
           trigger: true
         - get: toolbox-image
