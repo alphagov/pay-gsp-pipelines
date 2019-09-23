@@ -37,7 +37,7 @@ spec:
         privileged: true
         source:
           repository: govsvc/concourse-harbor-resource
-          tag: "gsp-v1.1.135"
+          tag: latest
 
     resources:
       - name: src
