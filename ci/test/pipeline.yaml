@@ -272,7 +272,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: cardid-src }
-        - put: pay-cardid-image
+        - put: cardid-image
           params:
             build: src
             tag_as_latest: true
@@ -286,7 +286,7 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: frontend-src }
-        - put: pay-frontend-image
+        - put: frontend-image
           params:
             build: src
             tag_as_latest: true
@@ -314,7 +314,7 @@ spec:
         - task: test
           file: src/tasks/node-test.yaml
           input_mapping: { src: toolbox-src }
-        - put: pay-toolbox-image
+        - put: toolbox-image
           params:
             build: src
             tag_as_latest: true
@@ -328,7 +328,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: adminusers-src }
-        - put: pay-adminusers-image
+        - put: adminusers-image
           params:
             build: src
             tag_as_latest: true
@@ -342,7 +342,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: connector-src }
-        - put: pay-connector-image
+        - put: connector-image
           params:
             build: src
             tag_as_latest: true
@@ -356,7 +356,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: ledger-src }
-        - put: pay-ledger-image
+        - put: ledger-image
           params:
             build: src
             tag_as_latest: true
@@ -370,7 +370,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: products-src }
-        - put: pay-products-image
+        - put: products-image
           params:
             build: src
             tag_as_latest: true
@@ -384,7 +384,7 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: products-ui-src }
-        - put: pay-products-ui-image
+        - put: products-ui-image
           params:
             build: src
             tag_as_latest: true
@@ -398,7 +398,7 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: selfservice-src }
-        - put: pay-selfservice-image
+        - put: selfservice-image
           params:
             build: src
             tag_as_latest: true
@@ -412,7 +412,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: publicauth-src }
-        - put: pay-publicauth-image
+        - put: publicauth-image
           params:
             build: src
             tag_as_latest: true
@@ -426,7 +426,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: publicapi-src }
-        - put: pay-publicapi-image
+        - put: publicapi-image
           params:
             build: src
             tag_as_latest: true
@@ -440,7 +440,7 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: dd-connector-src }
-        - put: pay-dd-connector-image
+        - put: dd-connector-image
           params:
             build: src
             tag_as_latest: true
@@ -454,7 +454,7 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: dd-frontend-src }
-        - put: pay-dd-frontend-image
+        - put: dd-frontend-image
           params:
             build: src
             tag_as_latest: true
@@ -562,9 +562,9 @@ spec:
         serial_groups: [deploy-in-progress]
         plan:
           - get: src
-            passed: [release]
+            passed: [package]
           - get: chart
-            passed: [release]
+            passed: [package]
             trigger: true
           - task: helm-render
             file: src/tasks/helm-render.yaml
