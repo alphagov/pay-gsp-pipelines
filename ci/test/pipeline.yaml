@@ -569,11 +569,11 @@ spec:
           - task: helm-render
             file: src/tasks/helm-render.yaml
             vars:
-              release_name: pay
+              release_name: test
           - task: deploy
             file: src/tasks/deploy.yaml
             vars:
-              release_name: pay
+              release_name: test
 
       - name: end-to-end
         serial_groups: [deploy-in-progress]

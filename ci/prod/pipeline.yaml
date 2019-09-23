@@ -73,8 +73,8 @@ spec:
           - task: helm-render
             file: src/tasks/helm-render.yaml
             vars:
-              release_name: pay
+              release_name: prod
           - task: deploy
             file: src/tasks/deploy.yaml
             vars:
-              release_name: pay
+              release_name: prod

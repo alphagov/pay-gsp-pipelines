@@ -27,7 +27,7 @@ spec:
             requires: db
         namespaceSelector:
           matchLabels:
-            namespace: portfolio-pay-test
+            namespace: {{ .Values.global.cluster.name }}-test
       ports:
       - protocol: TCP
         port: 5432
