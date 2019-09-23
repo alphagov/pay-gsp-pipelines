@@ -12,8 +12,13 @@ spec:
     github_source: &github_source
       uri: https://github.com/alphagov/pay-gsp-pipelines
       branch: develop
-      username: re-autom8-ci
+      organization: alphagov
+      owner: alphagov
+      username: "re-autom8-ci"
       password: ((github.api-token))
+      repository: pay-gsp-pipelines
+      github_api_token: ((github.api-token))
+      access_token: ((github.api-token))
 
     harbor_source: &harbor_source
       username: ((harbor.harbor_username))
