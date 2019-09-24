@@ -50,21 +50,21 @@ spec:
           - name: DB_PASSWORD
             value: mysecretpassword
           - name: DEMOSERVICE_PAYSTART_URL
-            value: http://{{ .Release.Name }}-demo-service
+            value: http://test-demo-service
           - name: PUBLICAPI_URL
-            value: http://{{ .Release.Name }}-public-api
+            value: http://test-public-api
           - name: PUBLIC_AUTH_URL
-            value: http://{{ .Release.Name }}-public-auth
+            value: http://test-public-auth
           - name: TEST_GATEWAY_ACCOUNT_ID
             value: "111"
           - name: CONNECTOR_URL
-            value: http://{{ .Release.Name }}-connector
+            value: http://test-connector
           - name: DIRECT_DEBIT_CONNECTOR_URL
-            value: http://{{ .Release.Name }}-direct-debit-connector
+            value: http://test-direct-debit-connector
           - name: ADMINUSERS_URL
-            value: http://{{ .Release.Name }}-adminusers
+            value: http://test-adminusers
           - name: SELFSERVICE_URL
-            value: http://{{ .Release.Name }}-self-service
+            value: http://test-self-service
           - name: SELFSERVICE_USERNAME
             value: alice.111@mail.fake
           - name: SELFSERVICE_PASSWORD
@@ -72,19 +72,19 @@ spec:
           - name: SELFSERVICE_OTP_KEY
             value: 55w7bwl169
           - name: STUBS_URL
-            value: http://{{ .Release.Name }}-stubs
+            value: http://test-stubs
           - name: DB_SETUP_FOR_SMOKE
             value: "true"
           - name: FRONTEND_URL
-            value: http://{{ .Release.Name }}-frontend
+            value: http://test-frontend
           - name: ADMIN_USERS_URL
-            value: http://{{ .Release.Name }}-adminusers
+            value: http://test-adminusers
           - name: NOTIFICATIONS_URL
-            value: http://{{ .Release.Name }}-notifications
+            value: http://test-notifications
           - name: PRODUCTS_URL
-            value: http://{{ .Release.Name }}-products
+            value: http://test-products
           - name: PRODUCTS_UI_URL
-            value: http://{{ .Release.Name }}-products-ui
+            value: http://test-products-ui
           - name: PRODUCTS_API_TOKEN
             value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
           - name: HTTP_ZAP_ENABLED
@@ -105,5 +105,7 @@ spec:
             value: /usr/bin/chromedriver
           - name: CHROMEDRIVER_VERBOSE
             value: "{{ .Values.endtoend.verbose }}"
+          - name: MVN_ARGS
+            value: "-o"
         resources: {}
       restartPolicy: Always
