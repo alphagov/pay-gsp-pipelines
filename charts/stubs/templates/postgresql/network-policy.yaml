@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-allow-postgres
+  name: {{ .Release.Name }}-allow-all-postgres
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: postgresql
@@ -17,17 +17,9 @@ spec:
   - Ingress
   ingress:
     - from:
-      # pods in this namespace
       - podSelector:
           matchLabels:
             requires: db
-      # pods in the test namespace
-      - podSelector:
-          matchLabels:
-            requires: db
-        namespaceSelector:
-          matchLabels:
-            namespace: {{ .Values.global.cluster.name }}-test
       ports:
       - protocol: TCP
         port: 5432

@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-allow-ingress-stubs
+  name: {{ .Release.Name }}-allow-all-from-stubs
   namespace: {{ .Release.Namespace }}
   labels:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -15,6 +15,6 @@ spec:
   - Ingress
   ingress:
     - from:
-      - namespaceSelector:
+      - podSelector:
           matchLabels:
-            namespace: {{ .Values.global.cluster.name }}-stubs
+            app.kubernetes.io/instance: stubs

@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-allow-endtoend-all
+  name: {{ .Release.Name }}-allow-all
   namespace: {{ .Release.Namespace }}
   labels:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -17,7 +17,4 @@ spec:
     - from:
       - podSelector:
           matchLabels:
-            app: endtoend
-        namespaceSelector:
-          matchLabels:
-            namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/instance: {{ .Release.Name }}
