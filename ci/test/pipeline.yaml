@@ -281,7 +281,7 @@ spec:
         - put: cardid-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: cardid-src/.git/short_ref
 
       - name: build-frontend
         serial_groups: [frontend]
@@ -295,7 +295,7 @@ spec:
         - put: frontend-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: frontend-src/.git/short_ref
 
       - name: build-toolbox
         serial_groups: [toolbox]
@@ -323,7 +323,7 @@ spec:
         - put: toolbox-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: toolbox-src/.git/short_ref
 
       - name: build-adminusers
         serial_groups: [adminusers]
@@ -337,7 +337,7 @@ spec:
         - put: adminusers-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: adminusers-src/.git/short_ref
 
       - name: build-connector
         serial_groups: [connector]
@@ -351,7 +351,7 @@ spec:
         - put: connector-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: connector-src/.git/short_ref
 
       - name: build-ledger
         serial_groups: [ledger]
@@ -365,7 +365,7 @@ spec:
         - put: ledger-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: ledger-src/.git/short_ref
 
       - name: build-products
         serial_groups: [products]
@@ -379,7 +379,7 @@ spec:
         - put: products-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: products-src/.git/short_ref
 
       - name: build-products-ui
         serial_groups: [products-ui]
@@ -393,7 +393,7 @@ spec:
         - put: products-ui-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: products-ui-src/.git/short_ref
 
       - name: build-selfservice
         serial_groups: [selfservice]
@@ -407,7 +407,7 @@ spec:
         - put: selfservice-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: selfservice-src/.git/short_ref
 
       - name: build-publicauth
         serial_groups: [publicauth]
@@ -421,7 +421,7 @@ spec:
         - put: publicauth-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: publicauth-src/.git/short_ref
 
       - name: build-publicapi
         serial_groups: [publicapi]
@@ -435,7 +435,7 @@ spec:
         - put: publicapi-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: publicapi-src/.git/short_ref
 
       - name: build-dd-connector
         serial_groups: [dd-connector]
@@ -449,7 +449,7 @@ spec:
         - put: dd-connector-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: dd-connector-src/.git/short_ref
 
       - name: build-dd-frontend
         serial_groups: [dd-frontend]
@@ -463,7 +463,7 @@ spec:
         - put: dd-frontend-image
           params:
             build: src
-            tag_as_latest: true
+            tag_file: dd-frontend-src/.git/short_ref
 
       - name: package
         serial_groups:

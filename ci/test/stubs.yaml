@@ -67,10 +67,9 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-endtoend
           branch: disable-dev-shm
-          username: re-autom8-ci
-          password: ((github.api-token))
 
       - name: endtoend-image
         type: harbor
@@ -83,10 +82,9 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-stubs
           branch: master
-          username: re-autom8-ci
-          password: ((github.api-token))
 
       - name: stubs-image
         type: harbor
@@ -99,10 +97,9 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-demo-service
           branch: master
-          username: re-autom8-ci
-          password: ((github.api-token))
 
       - name: demo-service-image
         type: harbor
@@ -120,7 +117,7 @@ spec:
         - put: endtoend-image
           params:
             build: endtoend-src
-            tag_as_latest: true
+            tag_file: endtoend-src/.git/short_ref
 
       - name: build-stubs
         serial_groups: [stubs]
@@ -130,6 +127,7 @@ spec:
         - put: stubs-image
           params:
             build: stubs-src
+            tag_file: stubs-src/.git/short_ref
 
       - name: build-demo-service
         serial_groups: [demo-service]
@@ -139,6 +137,8 @@ spec:
         - put: demo-service-image
           params:
             build: demo-service-src
+            tag_file: demo-service-src/.git/short_ref
+
 
       - name: release
         serial_groups: [endtoend, stubs, demo-service]
