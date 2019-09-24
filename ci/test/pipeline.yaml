@@ -11,7 +11,7 @@ spec:
 
     github_source: &github_source
       uri: https://github.com/alphagov/pay-gsp-pipelines
-      branch: develop
+      branch: master
       organization: alphagov
       owner: alphagov
       username: "re-autom8-ci"
@@ -50,6 +50,7 @@ spec:
         icon: github-circle
         source:
           <<: *github_source
+          branch: develop
           paths:
             - tasks
             - charts/pay
@@ -76,16 +77,15 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-cardid
-          branch: master
 
       - name: cardid-data
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-cardid-data
-          username: re-autom8-ci
-          password: ((github.api-token))
 
       - name: cardid-image
         type: harbor
@@ -98,8 +98,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-frontend
-          branch: master
 
       - name: frontend-image
         type: harbor
@@ -112,8 +112,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-toolbox
-          branch: master
 
       - name: toolbox-image
         type: harbor
@@ -126,8 +126,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-adminusers
-          branch: master
 
       - name: adminusers-image
         type: harbor
@@ -140,8 +140,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-connector
-          branch: master
 
       - name: connector-image
         type: harbor
@@ -154,8 +154,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-ledger
-          branch: master
 
       - name: ledger-image
         type: harbor
@@ -168,8 +168,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-products
-          branch: master
 
       - name: products-image
         type: harbor
@@ -182,8 +182,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-products-ui
-          branch: master
 
       - name: products-ui-image
         type: harbor
@@ -196,8 +196,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-selfservice
-          branch: master
 
       - name: selfservice-image
         type: harbor
@@ -210,8 +210,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-publicauth
-          branch: master
 
       - name: publicauth-image
         type: harbor
@@ -224,8 +224,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-publicapi
-          branch: master
 
       - name: publicapi-image
         type: harbor
@@ -238,8 +238,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-direct-debit-connector
-          branch: master
 
       - name: dd-connector-image
         type: harbor
@@ -252,8 +252,8 @@ spec:
         type: git
         icon: github-circle
         source:
+          <<: *github_source
           uri: https://github.com/alphagov/pay-direct-debit-frontend
-          branch: master
 
       - name: dd-frontend-image
         type: harbor

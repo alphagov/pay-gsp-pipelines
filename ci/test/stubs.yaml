@@ -11,7 +11,7 @@ spec:
 
     github_source: &github_source
       uri: https://github.com/alphagov/pay-gsp-pipelines
-      branch: develop
+      branch: master
       organization: alphagov
       owner: alphagov
       username: "re-autom8-ci"
@@ -50,6 +50,7 @@ spec:
         icon: github-circle
         source:
           <<: *github_source
+          branch: develop
           paths:
             - tasks
             - charts/stubs
@@ -84,7 +85,6 @@ spec:
         source:
           <<: *github_source
           uri: https://github.com/alphagov/pay-stubs
-          branch: master
 
       - name: stubs-image
         type: harbor
@@ -99,7 +99,6 @@ spec:
         source:
           <<: *github_source
           uri: https://github.com/alphagov/pay-demo-service
-          branch: master
 
       - name: demo-service-image
         type: harbor

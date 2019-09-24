@@ -35,4 +35,4 @@ run:
       EOF
 
       spruce merge src/charts/stubs/values.yaml new_values.yaml > tmp
-      mv tmp src/charts/stubs/values.yaml
+      tee src/charts/stubs/values.yaml < tmp

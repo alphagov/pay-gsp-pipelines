@@ -85,4 +85,4 @@ run:
       EOF
 
       spruce merge src/charts/pay/values.yaml new_values.yaml > tmp
-      mv tmp src/charts/pay/values.yaml
+      tee src/charts/pay/values.yaml < tmp
