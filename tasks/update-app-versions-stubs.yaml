@@ -22,16 +22,20 @@ run:
     - |
       set -o errexit -o nounset -o pipefail
 
+      ref() {
+        jq -r '.[0].Labels.commit' < "$1/docker_inspect.json"
+      }
+
       cat > new_values.yaml <<EOF
       endtoend:
         image:
-          tag: $(cat endtoend-image/tag)
+          tag: $(ref endtoend-image)
       demoService:
         image:
-          tag: $(cat demo-service-image/tag)
+          tag: $(ref demo-service-image)
       stubs:
         image:
-          tag: $(cat stubs-image/tag)
+          tag: $(ref stubs-image)
       EOF
 
       spruce merge src/charts/stubs/values.yaml new_values.yaml > tmp

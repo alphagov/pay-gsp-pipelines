@@ -111,33 +111,47 @@ spec:
       - name: build-endtoend
         serial_groups: [endtoend]
         plan:
+        - get: src
         - get: endtoend-src
           trigger: true
+        - task: generate-labels
+          input_mapping: { repo: endtoend-src }
+          file: src/tasks/generate-labels.yaml
         - put: endtoend-image
           params:
             build: endtoend-src
             tag_file: endtoend-src/.git/short_ref
+            labels_file: labels/labels.json
 
       - name: build-stubs
         serial_groups: [stubs]
         plan:
+        - get: src
         - get: stubs-src
           trigger: true
+        - task: generate-labels
+          input_mapping: { repo: stubs-src }
+          file: src/tasks/generate-labels.yaml
         - put: stubs-image
           params:
             build: stubs-src
             tag_file: stubs-src/.git/short_ref
+            labels_file: labels/labels.json
 
       - name: build-demo-service
         serial_groups: [demo-service]
         plan:
+        - get: src
         - get: demo-service-src
           trigger: true
+        - task: generate-labels
+          input_mapping: { repo: demo-service-src }
+          file: src/tasks/generate-labels.yaml
         - put: demo-service-image
           params:
             build: demo-service-src
             tag_file: demo-service-src/.git/short_ref
-
+            labels_file: labels/labels.json
 
       - name: release
         serial_groups: [endtoend, stubs, demo-service]
@@ -147,18 +161,12 @@ spec:
         - get: endtoend-image
           passed: [build-endtoend]
           trigger: true
-          params:
-            skip_download: true
         - get: stubs-image
           passed: [build-stubs]
           trigger: true
-          params:
-            skip_download: true
         - get: demo-service-image
           passed: [build-demo-service]
           trigger: true
-          params:
-            skip_download: true
         - task: update-app-versions
           file: src/tasks/update-app-versions-stubs.yaml
         - task: helm-package
