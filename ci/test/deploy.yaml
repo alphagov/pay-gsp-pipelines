@@ -271,7 +271,7 @@ spec:
 
     jobs:
       - name: build-cardid
-        serial_groups: [cardid]
+        serial_groups: [cardid, leonardo]
         plan:
         - get: src
         - get: cardid-src
@@ -291,7 +291,7 @@ spec:
             tag_file: cardid-src/.git/short_ref
 
       - name: build-frontend
-        serial_groups: [frontend]
+        serial_groups: [frontend, leonardo]
         plan:
         - get: src
         - get: frontend-src
@@ -305,7 +305,7 @@ spec:
             tag_file: frontend-src/.git/short_ref
 
       - name: build-toolbox
-        serial_groups: [toolbox]
+        serial_groups: [toolbox, leonardo]
         plan:
         - get: src
         - get: toolbox-src
@@ -333,7 +333,7 @@ spec:
             tag_file: toolbox-src/.git/short_ref
 
       - name: build-adminusers
-        serial_groups: [adminusers]
+        serial_groups: [adminusers, michaelangelo]
         plan:
         - get: src
         - get: adminusers-src
@@ -347,7 +347,7 @@ spec:
             tag_file: adminusers-src/.git/short_ref
 
       - name: build-connector
-        serial_groups: [connector]
+        serial_groups: [connector, michaelangelo]
         plan:
         - get: src
         - get: connector-src
@@ -361,7 +361,7 @@ spec:
             tag_file: connector-src/.git/short_ref
 
       - name: build-ledger
-        serial_groups: [ledger]
+        serial_groups: [ledger, michaelangelo]
         plan:
         - get: src
         - get: ledger-src
@@ -375,7 +375,7 @@ spec:
             tag_file: ledger-src/.git/short_ref
 
       - name: build-products
-        serial_groups: [products]
+        serial_groups: [products, donatello]
         plan:
         - get: src
         - get: products-src
@@ -389,7 +389,7 @@ spec:
             tag_file: products-src/.git/short_ref
 
       - name: build-products-ui
-        serial_groups: [products-ui]
+        serial_groups: [products-ui, donatello]
         plan:
         - get: src
         - get: products-ui-src
@@ -403,7 +403,7 @@ spec:
             tag_file: products-ui-src/.git/short_ref
 
       - name: build-selfservice
-        serial_groups: [selfservice]
+        serial_groups: [selfservice, donatello]
         plan:
         - get: src
         - get: selfservice-src
@@ -417,7 +417,7 @@ spec:
             tag_file: selfservice-src/.git/short_ref
 
       - name: build-publicauth
-        serial_groups: [publicauth]
+        serial_groups: [publicauth, raphael]
         plan:
         - get: src
         - get: publicauth-src
@@ -431,7 +431,7 @@ spec:
             tag_file: publicauth-src/.git/short_ref
 
       - name: build-publicapi
-        serial_groups: [publicapi]
+        serial_groups: [publicapi, raphael]
         plan:
         - get: src
         - get: publicapi-src
@@ -445,7 +445,7 @@ spec:
             tag_file: publicapi-src/.git/short_ref
 
       - name: build-dd-connector
-        serial_groups: [dd-connector]
+        serial_groups: [dd-connector, raphael]
         plan:
         - get: src
         - get: dd-connector-src
@@ -459,7 +459,7 @@ spec:
             tag_file: dd-connector-src/.git/short_ref
 
       - name: build-dd-frontend
-        serial_groups: [dd-frontend]
+        serial_groups: [dd-frontend, raphael]
         plan:
         - get: src
         - get: dd-frontend-src
