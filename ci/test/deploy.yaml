@@ -7,19 +7,7 @@ metadata:
   name: deploy
 spec:
   exposed: true
-  pipelineString: |
-
-    github_source: &github_source
-      uri: https://github.com/alphagov/pay-gsp-pipelines
-      branch: master
-      organization: alphagov
-      owner: alphagov
-      username: "re-autom8-ci"
-      password: ((github.api-token))
-      repository: pay-gsp-pipelines
-      github_api_token: ((github.api-token))
-      access_token: ((github.api-token))
-
+  config:
     harbor_source: &harbor_source
       username: ((harbor.harbor_username))
       password: ((harbor.harbor_password))
@@ -49,7 +37,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           branch: develop
           paths:
             - tasks
@@ -59,7 +48,9 @@ spec:
         type: github-release
         icon: archive
         source:
-          <<: *github_source
+          owner: alphagov
+          repository: pay-gsp-pipelines
+          access_token: ((github.api-token))
           tag_filter: "pay-v?([^v].*)"
           release: false
           pre_release: true
@@ -68,7 +59,9 @@ spec:
         type: github-release
         icon: archive
         source:
-          <<: *github_source
+          owner: alphagov
+          repository: pay-gsp-pipelines
+          access_token: ((github.api-token))
           tag_filter: "pay-v?([^v].*)"
           release: true
           pre_release: false
@@ -77,14 +70,16 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-cardid
 
       - name: cardid-data
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-cardid-data
 
       - name: cardid-image
@@ -98,7 +93,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-frontend
 
       - name: frontend-image
@@ -112,7 +108,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-toolbox
 
       - name: toolbox-image
@@ -126,7 +123,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-adminusers
 
       - name: adminusers-image
@@ -140,7 +138,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-connector
 
       - name: connector-image
@@ -154,7 +153,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-ledger
 
       - name: ledger-image
@@ -168,7 +168,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-products
 
       - name: products-image
@@ -182,7 +183,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-products-ui
 
       - name: products-ui-image
@@ -196,7 +198,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-selfservice
 
       - name: selfservice-image
@@ -210,7 +213,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-publicauth
 
       - name: publicauth-image
@@ -224,7 +228,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-publicapi
 
       - name: publicapi-image
@@ -238,7 +243,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-direct-debit-connector
 
       - name: dd-connector-image
@@ -252,7 +258,8 @@ spec:
         type: git
         icon: github-circle
         source:
-          <<: *github_source
+          username: re-autom8-ci
+          password: ((github.api-token))
           uri: https://github.com/alphagov/pay-direct-debit-frontend
 
       - name: dd-frontend-image
