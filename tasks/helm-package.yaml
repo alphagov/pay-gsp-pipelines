@@ -9,7 +9,7 @@ image_resource:
     tag: latest
 
 inputs:
-- name: src
+- name: pay-gsp
 
 outputs:
 - name: chart-package
@@ -35,7 +35,7 @@ run:
     gpg --export-secret-keys > ~/.gnupg/pubring.gpg
     KEY_ID="$(gpg --list-secret-keys --with-colons  | awk -F: '/uid:/ {print $10}' | head -n1)"
 
-    APP_VERSION=$(git -C src rev-parse --short HEAD)
+    APP_VERSION=$(git -C pay-gsp rev-parse --short HEAD)
     CHART_VERSION="1.0.0-sha$APP_VERSION"
 
     echo "$CHART_NAME" > chart-version/name
@@ -49,4 +49,4 @@ run:
       --save=false \
       --sign \
       --key "${KEY_ID}" \
-      "./src/charts/${CHART_NAME}"
+      "./pay-gsp/charts/${CHART_NAME}"

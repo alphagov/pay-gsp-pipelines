@@ -7,13 +7,13 @@ image_resource:
     tag: latest
 
 inputs:
-  - name: src
+  - name: pay-gsp
   - name: endtoend-image
   - name: stubs-image
   - name: demo-service-image
 
 outputs:
-  - name: src
+  - name: pay-gsp
 
 run:
   path: bash
@@ -38,5 +38,5 @@ run:
           tag: $(ref stubs-image)
       EOF
 
-      spruce merge src/charts/stubs/values.yaml new_values.yaml > tmp
-      tee src/charts/stubs/values.yaml < tmp
+      spruce merge pay-gsp/charts/stubs/values.yaml new_values.yaml > tmp
+      tee pay-gsp/charts/stubs/values.yaml < tmp

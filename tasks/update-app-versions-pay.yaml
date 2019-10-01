@@ -7,7 +7,7 @@ image_resource:
     tag: latest
 
 inputs:
-  - name: src
+  - name: pay-gsp
   - name: adminusers-image
   - name: cardid-image
   - name: connector-image
@@ -23,7 +23,7 @@ inputs:
   - name: toolbox-image
 
 outputs:
-  - name: src
+  - name: pay-gsp
 
 run:
   path: bash
@@ -88,5 +88,5 @@ run:
           tag: $(ref selfservice-image)
       EOF
 
-      spruce merge src/charts/pay/values.yaml new_values.yaml > tmp
-      tee src/charts/pay/values.yaml < tmp
+      spruce merge pay-gsp/charts/pay/values.yaml new_values.yaml > tmp
+      tee pay-gsp/charts/pay/values.yaml < tmp
