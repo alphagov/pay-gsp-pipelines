@@ -27,12 +27,12 @@ stubs:
     tag: latest
     pullPolicy: IfNotPresent
 
-hub:
-  tag: 3.9.1-actinium
-  ingress:
-    hosts:
-      - selenium-hub
-
-chrome:
-  enabled: true
-  replicas: 4
+selenium:
+  hub:
+    tag: 3.9.1-actinium
+    ingress:
+      hosts:
+        - selenium-hub
+  chrome:
+    enabled: true
+    replicas: 4
