@@ -41,13 +41,20 @@ spec:
           branch: develop-andy
           paths:
             - manifests
+            - tasks
 
-      - name: frontend-image
+      - name: frontend
         type: harbor
         icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/frontend
+      - name: connector
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/connector
 
     jobs:
       - name: deploy-frontend-to-test
@@ -55,33 +62,26 @@ spec:
         plan:
           - get: deploy-config
             trigger: true
-          - get: frontend-image
+          - get: frontend
             trigger: true
             params:
               skip_download: true
           - task: deploy-to-paas
-            config:
-              platform: linux
-              image_resource:
-                type: docker-image
-                source:
-                  repository: governmentpaas/cf-cli
-                  tag: cf7
-              inputs:
-                - name: frontend-image
-                - name: deploy-config
-              params:
-                CF_USER: ((cf-credentials.username))
-                CF_PASSWORD: ((cf-credentials.password))
-              run:
-                path: bash
-                args:
-                  - -c
-                  - |
-                    cf login -a https://api.london.cloud.service.gov.uk \
-                      -o govuk-pay -s andy \
-                      -u $CF_USER -p $CF_PASSWORD
-                    cf push --strategy rolling \
-                      -f deploy-config/manifests/frontend.yml \
-                      --var developer=andy \
-                      -o "$(cat frontend-image/repository)@$(cat frontend-image/digest)"
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: frontend }
+            params:
+              APP: frontend
+      - name: deploy-connector-to-test
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: connector
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: connector }
+            params:
+              APP: connector
