@@ -43,35 +43,115 @@ spec:
             - manifests
             - tasks
 
-      - name: frontend
+      - name: admin-users
         type: harbor
         icon: docker
         source:
           <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/frontend
+          repository: registry.((cluster.domain))/pay/adminusers
+      - name: card-id
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/cardid
       - name: connector
         type: harbor
         icon: docker
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/connector
+      - name: demo-service
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/demo-service
+      - name: direct-debit-connector
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/dd-connector
+      - name: direct-debit-frontend
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/dd-frontend
+      - name: frontend
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/frontend
+      - name: ledger
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/ledger
+      - name: products-ui
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products-ui
+      - name: products
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/products
+      - name: public-api
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicapi
+      - name: public-auth
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/publicauth
+      - name: self-service
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/selfservice
 
     jobs:
-      - name: deploy-frontend-to-test
+      - name: deploy-admin-users
         serial: true
         plan:
           - get: deploy-config
             trigger: true
-          - get: frontend
+          - get: admin-users
             trigger: true
             params:
               skip_download: true
           - task: deploy-to-paas
             file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: frontend }
+            input_mapping: { image: admin-users }
             params:
-              APP: frontend
-      - name: deploy-connector-to-test
+              APP: admin-users
+      - name: deploy-card-id
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: card-id
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: card-id }
+            params:
+              APP: card-id
+      - name: deploy-connector
         serial: true
         plan:
           - get: deploy-config
@@ -85,3 +165,143 @@ spec:
             input_mapping: { image: connector }
             params:
               APP: connector
+      - name: deploy-demo-service
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: demo-service
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: demo-service }
+            params:
+              APP: demo-service
+      - name: deploy-direct-debit-connector
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: direct-debit-connector
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: direct-debit-connector }
+            params:
+              APP: direct-debit-connector
+      - name: deploy-direct-debit-frontend
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: direct-debit-frontend
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: direct-debit-frontend }
+            params:
+              APP: direct-debit-frontend
+      - name: deploy-frontend
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: frontend
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: frontend }
+            params:
+              APP: frontend
+      - name: deploy-ledger
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: ledger
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: ledger }
+            params:
+              APP: ledger
+      - name: deploy-products-ui
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: products-ui
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: products-ui }
+            params:
+              APP: products-ui
+      - name: deploy-products
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: products
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: products }
+            params:
+              APP: products
+      - name: deploy-public-api
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: public-api
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: public-api }
+            params:
+              APP: public-api
+      - name: deploy-public-auth
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: public-auth
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: public-auth }
+            params:
+              APP: public-auth
+      - name: deploy-self-service
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: self-service
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            file: deploy-config/tasks/deploy-to-paas.yaml
+            input_mapping: { image: self-service }
+            params:
+              APP: self-service
