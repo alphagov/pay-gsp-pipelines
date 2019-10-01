@@ -1,0 +1,24 @@
+---
+applications:
+  - name: publicauth
+    db: true
+    docker:
+      image: govukpay/publicauth:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      ADMIN_PORT: '9601'
+      DB_HOST: pay-db-((developer)).apps.internal
+      DB_SSL_OPTION: ssl=false
+      DB_USER: publicauth
+      DB_PASSWORD: mysecretpassword
+      TOKEN_DB_BCRYPT_SALT: $2a$10$IhaXo6LIBhKIWOiGpbtPOu
+      TOKEN_API_HMAC_SECRET: qwer9yuhgf
+      RUN_MIGRATION: 'true'
+      RUN_APP: 'true'
+      DISABLE_INTERNAL_HTTPS: 'true'
+      JAVA_OPTS: -Xms512m -Xmx1G
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    routes:
+    - route: pay-publicauth-((developer)).london.cloudapps.digital

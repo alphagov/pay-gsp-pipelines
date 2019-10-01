@@ -1,0 +1,87 @@
+---
+apiVersion: concourse.k8s.io/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: deploy-paas
+  namespace: portfolio-pay-test
+spec:
+  exposed: true
+  config:
+    harbor_source: &harbor_source
+      username: ((harbor.harbor_username))
+      password: ((harbor.harbor_password))
+      harbor:
+        url: ((harbor.harbor_url))
+        prevent_vul: "false"
+      notary:
+        url: ((harbor.notary_url))
+        root_key: ((harbor.root_key))
+        delegate_key: ((harbor.ci_key))
+        passphrase:
+          root: ((harbor.notary_root_passphrase))
+          snapshot: ((harbor.notary_snapshot_passphrase))
+          targets: ((harbor.notary_targets_passphrase))
+          delegation: ((harbor.notary_delegation_passphrase))
+
+    resource_types:
+      - name: harbor
+        type: registry-image
+        privileged: true
+        source:
+          repository: govsvc/concourse-harbor-resource
+          tag: latest
+
+    resources:
+      - name: deploy-config
+        type: git
+        source:
+          uri: https://github.com/alphagov/pay-gsp-pipelines
+          branch: develop-andy
+          paths:
+            - manifests
+
+      - name: frontend-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/frontend
+
+    jobs:
+      - name: deploy-frontend-to-test
+        serial: true
+        plan:
+          - get: deploy-config
+            trigger: true
+          - get: frontend-image
+            trigger: true
+            params:
+              skip_download: true
+          - task: deploy-to-paas
+            config:
+              platform: linux
+              image_resource:
+                type: docker-image
+                source:
+                  repository: governmentpaas/cf-cli
+                  tag: cf7
+              inputs:
+                - name: frontend-image
+                - name: deploy-config
+              params:
+                CF_USER: ((cf-credentials.username))
+                CF_PASSWORD: ((cf-credentials.password))
+              run:
+                path: bash
+                args:
+                  - -c
+                  - |
+                    cf login -a https://api.london.cloud.service.gov.uk \
+                      -o govuk-pay -s andy \
+                      -u $CF_USER -p $CF_PASSWORD
+                    cf push --strategy rolling \
+                      -f deploy-config/manifests/frontend.yml \
+                      --var developer=andy \
+                      -o "$(cat frontend-image/repository)@$(cat frontend-image/digest)"

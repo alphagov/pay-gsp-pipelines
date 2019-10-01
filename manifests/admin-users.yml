@@ -1,0 +1,40 @@
+---
+applications:
+  - name: adminusers
+    health-check-type: process
+    memory: 1G
+    env:
+      ADMIN_PORT: '9701'
+      DB_HOST: pay-db-((developer)).apps.internal
+      DB_SSL_OPTION: ssl=false
+      DB_USER: adminusers
+      DB_PASSWORD: mysecretpassword
+      JPA_LOG_LEVEL: WARNING
+      JPA_SQL_LOG_LEVEL: WARNING
+      LOGIN_ATTEMPT_CAP: '2'
+      HTTP_PROXY_HOST: pay-egress-((developer)).apps.internal
+      HTTP_PROXY_PORT: '8080'
+      NOTIFY_SERVICE_ID: pay-notify-service-id
+      NOTIFY_SECRET: pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+      NOTIFY_API_KEY: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+      NOTIFY_2FA_TEMPLATE_ID: pay-notify-two-factor-template-id
+      NOTIFY_INVITE_EMAIL_TEMPLATE_ID: pay-notify-invite-email-template-id
+      NOTIFY_INVITE_USER_EMAIL_TEMPLATE_ID: pay-notify-invite-user-email-template-id
+      NOTIFY_FORGOTTEN_PASSWORD_EMAIL_TEMPLATE_ID: pay-notify-forgotten-password-email-template-id
+      NOTIFY_BASE_URL: https://pay-stubs-((developer)).london.cloudapps.digital/notify
+      NOTIFY_INVITE_SERVICE_EMAIL_TEMPLATE_ID: pay-notify-invite-service-email-template-id
+      NOTIFY_INVITE_SERVICE_USER_EXITS_EMAIL_TEMPLATE_ID: pay-notify-invite-service-user-exists-email-template-id
+      NOTIFY_DIRECT_DEBIT_API_KEY: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
+      NOTIFY_PAYMENT_CONFIRMED_TEMPLATE_ID: email-template-id
+      NOTIFY_PAYMENT_FAILED_TEMPLATE_ID: email-template-id
+      NOTIFY_MANDATE_FAILED_EMAIL_TEMPLATE_ID: email-template-id
+      NOTIFY_MANDATE_CANCELLED_EMAIL_TEMPLATE_ID: email-template-id
+      SELFSERVICE_URL: https://pay-selfservice-((developer)).london.cloudapps.digital
+      FORGOTTEN_PASSWORD_EXPIRY_MINUTES: '90'
+      RUN_MIGRATION: 'true'
+      RUN_APP: 'true'
+      DISABLE_INTERNAL_HTTPS: 'true'
+      JAVA_OPTS: -Xms512m -Xmx1G
+    routes:
+    - route: pay-adminusers-((developer)).london.cloudapps.digital
+    - route: pay-adminusers-((developer)).apps.internal

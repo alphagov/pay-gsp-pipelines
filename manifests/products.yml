@@ -1,0 +1,32 @@
+---
+applications:
+  - name: products
+    db: true
+    docker:
+      image: govukpay/products:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      ADMIN_PORT: '10001'
+      DB_HOST: pay-db-((developer)).apps.internal
+      DB_SSL_OPTION: ssl=false
+      DB_USER: products
+      DB_PASSWORD: mysecretpassword
+      JPA_LOG_LEVEL: WARNING
+      JPA_SQL_LOG_LEVEL: WARNING
+      PUBLICAPI_URL: https://pay-publicapi-((developer)).london.cloudapps.digital
+      BASE_URL: https://pay-products-((developer)).london.cloudapps.digital
+      PRODUCTS_API_TOKEN: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+      PRODUCTSUI_PAY_URL: https://pay-productsui-((developer)).london.cloudapps.digital/pay
+      PRODUCTSUI_CONFIRMATION_URL: https://pay-productsui-((developer)).london.cloudapps.digital/payment-complete
+      PRODUCTS_FRIENDLY_BASE_URI: https://pay-productsui-((developer)).london.cloudapps.digital/redirect
+      HTTP_PROXY_HOST: pay-egress-((developer)).apps.internal
+      HTTP_PROXY_PORT: '8080'
+      RUN_MIGRATION: 'true'
+      RUN_APP: 'true'
+      DISABLE_INTERNAL_HTTPS: 'true'
+      JAVA_OPTS: -Xms512m -Xmx1G
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    routes:
+    - route: pay-products-((developer)).london.cloudapps.digital

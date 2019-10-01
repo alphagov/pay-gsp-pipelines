@@ -1,0 +1,39 @@
+---
+applications:
+  - name: directdebit-connector
+    db: true
+    docker:
+      image: govukpay/directdebit-connector:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      ADMIN_PORT: '10201'
+      DB_HOST: pay-db-((developer)).apps.internal
+      DB_SSL_OPTION: ssl=false
+      DB_USER: directdebit_connector
+      DB_PASSWORD: mysecretpassword
+      HTTP_PROXY_HOST: pay-egress-((developer)).apps.internal
+      HTTP_PROXY_PORT: '8080'
+      FRONTEND_URL: https://pay-frontend-((developer)).london.cloudapps.digital
+      ADMINUSERS_URL: http://pay-adminusers-((developer)).london.cloudapps.digital
+      GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ACCESS_TOKEN: supersecret
+      GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_URL: https://pay-stubs-((developer)).london.cloudapps.digital/stub/gocardless/
+      GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_WEBHOOK_SECRET: supersecret
+      GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ENVIRONMENT: sandbox
+      JPA_LOG_LEVEL: WARNING
+      JPA_SQL_LOG_LEVEL: WARNING
+      AUTH_READ_TIMEOUT_SECONDS: '1'
+      GOCARDLESS_TEST_CLIENT_ID: gocardless-test-oauth-client-id
+      GOCARDLESS_TEST_CLIENT_SECRET: gocardless-test-oauth-client-secret
+      GOCARDLESS_LIVE_CLIENT_ID: gocardless-live-oauth-client-id
+      GOCARDLESS_LIVE_CLIENT_SECRET: gocardless-live-oauth-client-secret
+      GOCARDLESS_TEST_OAUTH_BASE_URL: https://connect-sandbox.gocardless.com
+      GOCARDLESS_LIVE_OAUTH_BASE_URL: https://connect-sandbox.gocardless.com
+      RUN_MIGRATION: 'true'
+      RUN_APP: 'true'
+      DISABLE_INTERNAL_HTTPS: 'true'
+      JAVA_OPTS: -Xms512m -Xmx1G
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    routes:
+    - route: pay-directdebit-connector-((developer)).london.cloudapps.digital

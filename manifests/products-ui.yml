@@ -1,0 +1,19 @@
+---
+applications:
+  - name: products-ui
+    docker:
+      image: govukpay/products-ui:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      PUBLICAPI_URL: https://pay-publicapi-((developer)).london.cloudapps.digital
+      PAY_API_URL: https://pay-publicapi-((developer)).london.cloudapps.digital
+      SELFSERVICE_TRANSACTIONS_URL: https://pay-selfservice-((developer)).london.cloudapps.digital/transactions
+      ADMINUSERS_URL: https://pay-adminusers-((developer)).london.cloudapps.digital
+      PRODUCTS_API_TOKEN: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
+      PRODUCTS_URL: https://pay-products-((developer)).london.cloudapps.digital
+      SESSION_ENCRYPTION_KEY: asdjhbwefbo23r23rbfik2roiwhefwbqw
+      COOKIE_MAX_AGE: '3600000'
+    routes:
+    - route: pay-products-ui-((developer)).london.cloudapps.digital

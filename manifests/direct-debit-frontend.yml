@@ -1,0 +1,16 @@
+---
+applications:
+  - name: directdebit-frontend
+    docker:
+      image: govukpay/directdebit-frontend:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      NODE_WORKER_COUNT: '1'
+      COOKIE_MAX_AGE: '5400000'
+      SESSION_ENCRYPTION_KEY: asdjhbwefbo23r23rbfik2roiwhefwbqw
+      CONNECTOR_URL: https://pay-connector-((developer)).london.cloudapps.digital
+      ADMINUSERS_URL: https://pay-adminusers-((developer)).london.cloudapps.digital
+    routes:
+    - route: pay-directdebit-frontend-((developer)).london.cloudapps.digital

@@ -1,0 +1,20 @@
+---
+applications:
+  - name: cardid
+    docker:
+      image: govukpay/cardid:latest-master
+      username: govukpaypaas
+    health-check-type: process
+    memory: 1G
+    env:
+      ADMIN_PORT: '9801'
+      TEST_CARD_DATA_LOCATION: /app/data/test-cards
+      WORLDPAY_DATA_LOCATION: /app/data/worldpay
+      DISCOVER_DATA_LOCATION: /app/data/discover
+      RUN_APP: 'true'
+      DISABLE_INTERNAL_HTTPS: 'true'
+      JAVA_OPTS: -Xms512m -Xmx1G
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    routes:
+    - route: pay-cardid-((developer)).london.cloudapps.digital
+    - route: pay-cardid-((developer)).apps.internal
