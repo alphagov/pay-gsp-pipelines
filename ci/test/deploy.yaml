@@ -538,7 +538,7 @@ spec:
             labels_file: labels/labels.json
             tag_as_latest: true
 
-      - name: package
+      - name: pre-release
         serial_groups:
           - cardid
           - frontend
@@ -559,55 +559,42 @@ spec:
             steps:
             - get: adminusers-image
               passed: [build-adminusers]
-              params: { skip_download: true }
               trigger: true
             - get: cardid-image
               passed: [build-cardid]
-              params: { skip_download: true }
               trigger: true
             - get: connector-image
               passed: [build-connector]
-              params: { skip_download: true }
               trigger: true
             - get: dd-connector-image
               passed: [build-dd-connector]
-              params: { skip_download: true }
               trigger: true
             - get: dd-frontend-image
               passed: [build-dd-frontend]
-              params: { skip_download: true }
               trigger: true
             - get: frontend-image
               passed: [build-frontend]
-              params: { skip_download: true }
               trigger: true
             - get: ledger-image
               passed: [build-ledger]
-              params: { skip_download: true }
               trigger: true
             - get: products-image
               passed: [build-products]
-              params: { skip_download: true }
               trigger: true
             - get: products-ui-image
               passed: [build-products-ui]
-              params: { skip_download: true }
               trigger: true
             - get: publicapi-image
               passed: [build-publicapi]
-              params: { skip_download: true }
               trigger: true
             - get: publicauth-image
               passed: [build-publicauth]
-              params: { skip_download: true }
               trigger: true
             - get: selfservice-image
               passed: [build-selfservice]
-              params: { skip_download: true }
               trigger: true
             - get: toolbox-image
               passed: [build-toolbox]
-              params: { skip_download: true }
               trigger: true
 
         - get: src
