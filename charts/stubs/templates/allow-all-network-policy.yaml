@@ -10,11 +10,11 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      release: {{ .Release.Name }}
   policyTypes:
   - Ingress
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            app.kubernetes.io/instance: {{ .Release.Name }}
+            release: {{ .Release.Name }}
