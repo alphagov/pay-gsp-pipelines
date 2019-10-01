@@ -286,10 +286,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: cardid-src }
+        - task: generate-labels
+          input_mapping: { repo: cardid-src }
+          file: src/tasks/generate-labels.yaml
         - put: cardid-image
           params:
             build: src
             tag_file: cardid-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-frontend
         serial_groups: [frontend, leonardo]
@@ -300,10 +305,15 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: frontend-src }
+        - task: generate-labels
+          input_mapping: { repo: frontend-src }
+          file: src/tasks/generate-labels.yaml
         - put: frontend-image
           params:
             build: src
             tag_file: frontend-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-toolbox
         serial_groups: [toolbox, leonardo]
@@ -328,10 +338,15 @@ spec:
         - task: test
           file: src/tasks/node-test.yaml
           input_mapping: { src: toolbox-src }
+        - task: generate-labels
+          input_mapping: { repo: toolbox-src }
+          file: src/tasks/generate-labels.yaml
         - put: toolbox-image
           params:
             build: src
             tag_file: toolbox-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-adminusers
         serial_groups: [adminusers, michaelangelo]
@@ -342,10 +357,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: adminusers-src }
+        - task: generate-labels
+          input_mapping: { repo: adminusers-src }
+          file: src/tasks/generate-labels.yaml
         - put: adminusers-image
           params:
             build: src
             tag_file: adminusers-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-connector
         serial_groups: [connector, michaelangelo]
@@ -356,10 +376,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: connector-src }
+        - task: generate-labels
+          input_mapping: { repo: connector-src }
+          file: src/tasks/generate-labels.yaml
         - put: connector-image
           params:
             build: src
             tag_file: connector-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-ledger
         serial_groups: [ledger, michaelangelo]
@@ -370,10 +395,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: ledger-src }
+        - task: generate-labels
+          input_mapping: { repo: ledger-src }
+          file: src/tasks/generate-labels.yaml
         - put: ledger-image
           params:
             build: src
             tag_file: ledger-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-products
         serial_groups: [products, donatello]
@@ -384,10 +414,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: products-src }
+        - task: generate-labels
+          input_mapping: { repo: products-src }
+          file: src/tasks/generate-labels.yaml
         - put: products-image
           params:
             build: src
             tag_file: products-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-products-ui
         serial_groups: [products-ui, donatello]
@@ -398,10 +433,15 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: products-ui-src }
+        - task: generate-labels
+          input_mapping: { repo: products-ui-src }
+          file: src/tasks/generate-labels.yaml
         - put: products-ui-image
           params:
             build: src
             tag_file: products-ui-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-selfservice
         serial_groups: [selfservice, donatello]
@@ -412,10 +452,15 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: selfservice-src }
+        - task: generate-labels
+          input_mapping: { repo: selfservice-src }
+          file: src/tasks/generate-labels.yaml
         - put: selfservice-image
           params:
             build: src
             tag_file: selfservice-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-publicauth
         serial_groups: [publicauth, raphael]
@@ -426,10 +471,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: publicauth-src }
+        - task: generate-labels
+          input_mapping: { repo: publicauth-src }
+          file: src/tasks/generate-labels.yaml
         - put: publicauth-image
           params:
             build: src
             tag_file: publicauth-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-publicapi
         serial_groups: [publicapi, raphael]
@@ -440,10 +490,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: publicapi-src }
+        - task: generate-labels
+          input_mapping: { repo: publicapi-src }
+          file: src/tasks/generate-labels.yaml
         - put: publicapi-image
           params:
             build: src
             tag_file: publicapi-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-dd-connector
         serial_groups: [dd-connector, raphael]
@@ -454,10 +509,15 @@ spec:
         - task: build
           file: src/tasks/maven-build.yaml
           input_mapping: { src: dd-connector-src }
+        - task: generate-labels
+          input_mapping: { repo: dd-connector-src }
+          file: src/tasks/generate-labels.yaml
         - put: dd-connector-image
           params:
             build: src
             tag_file: dd-connector-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-dd-frontend
         serial_groups: [dd-frontend, raphael]
@@ -468,10 +528,15 @@ spec:
         - task: test
           file: src/tasks/frontend.yaml
           input_mapping: { src: dd-frontend-src }
+        - task: generate-labels
+          input_mapping: { repo: dd-frontend-src }
+          file: src/tasks/generate-labels.yaml
         - put: dd-frontend-image
           params:
             build: src
             tag_file: dd-frontend-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: package
         serial_groups:

@@ -32,56 +32,60 @@ run:
     - |
       set -o errexit -o nounset -o pipefail
 
+      ref() {
+        jq -r '.[0].Config.Labels.commit' < "$1/docker_inspect.json"
+      }
+
       cat > new_values.yaml <<EOF
       adminUsers:
         image:
           repository: $(cat adminusers-image/repository)
-          tag: $(cat adminusers-image/tag)
+          tag: $(ref adminusers-image)
       cardID:
         image:
           repository: $(cat cardid-image/repository)
-          tag: $(cat cardid-image/tag)
+          tag: $(ref cardid-image)
       connector:
         image:
           repository: $(cat connector-image/repository)
-          tag: $(cat connector-image/tag)
+          tag: $(ref connector-image)
       directDebit:
         connector:
           image:
             repository: $(cat dd-connector-image/repository)
-            tag: $(cat dd-connector-image/tag)
+            tag: $(ref dd-connector-image)
         frontend:
           host:
           image:
             repository: $(cat dd-frontend-image/repository)
-            tag: $(cat dd-frontend-image/tag)
+            tag: $(ref dd-frontend-image)
       frontend:
         host:
         image:
           repository: $(cat frontend-image/repository)
-          tag: $(cat frontend-image/tag)
+          tag: $(ref frontend-image)
       products:
         image:
           repository: $(cat products-image/repository)
-          tag: $(cat products-image/tag)
+          tag: $(ref products-image)
         ui:
           host:
           image:
             repository: $(cat products-ui-image/repository)
-            tag: $(cat products-ui-image/tag)
+            tag: $(ref products-ui-image)
       public:
         api:
           image:
             repository: $(cat publicapi-image/repository)
-            tag: $(cat publicapi-image/tag)
+            tag: $(ref publicapi-image)
         auth:
           image:
             repository: $(cat publicauth-image/repository)
-            tag: $(cat publicauth-image/tag)
+            tag: $(ref publicauth-image)
       selfService:
         image:
           repository: $(cat selfservice-image/repository)
-          tag: $(cat selfservice-image/tag)
+          tag: $(ref selfservice-image)
       EOF
 
       spruce merge src/charts/pay/values.yaml new_values.yaml > tmp

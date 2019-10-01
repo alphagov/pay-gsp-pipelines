@@ -117,6 +117,7 @@ spec:
             build: endtoend-src
             tag_file: endtoend-src/.git/short_ref
             labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-stubs
         serial_groups: [stubs]
@@ -132,6 +133,7 @@ spec:
             build: stubs-src
             tag_file: stubs-src/.git/short_ref
             labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: build-demo-service
         serial_groups: [demo-service]
@@ -147,6 +149,7 @@ spec:
             build: demo-service-src
             tag_file: demo-service-src/.git/short_ref
             labels_file: labels/labels.json
+            tag_as_latest: true
 
       - name: release
         serial_groups: [endtoend, stubs, demo-service]
