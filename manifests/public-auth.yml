@@ -1,10 +1,6 @@
 ---
 applications:
   - name: publicauth
-    db: true
-    docker:
-      image: govukpay/publicauth:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

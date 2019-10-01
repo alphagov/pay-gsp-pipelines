@@ -1,9 +1,6 @@
 ---
 applications:
   - name: cardid
-    docker:
-      image: govukpay/cardid:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

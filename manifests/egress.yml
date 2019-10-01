@@ -1,9 +1,6 @@
 ---
 applications:
   - name: egress
-    docker:
-      image: govukpay/egress:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

@@ -1,9 +1,6 @@
 ---
 applications:
   - name: stubs
-    docker:
-      image: govukpay/stubs:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

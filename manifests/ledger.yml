@@ -1,11 +1,6 @@
 ---
 applications:
   - name: ledger
-    db: true
-    sqs: true
-    docker:
-      image: govukpay/ledger:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

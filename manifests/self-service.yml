@@ -1,9 +1,6 @@
 ---
 applications:
   - name: selfservice
-    docker:
-      image: govukpay/selfservice:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

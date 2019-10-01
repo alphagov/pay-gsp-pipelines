@@ -1,11 +1,6 @@
 ---
 applications:
   - name: connector
-    db: true
-    sqs: true
-    docker:
-      image: govukpay/connector:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

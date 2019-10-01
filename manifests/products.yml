@@ -1,10 +1,6 @@
 ---
 applications:
   - name: products
-    db: true
-    docker:
-      image: govukpay/products:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

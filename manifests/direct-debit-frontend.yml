@@ -1,9 +1,6 @@
 ---
 applications:
   - name: directdebit-frontend
-    docker:
-      image: govukpay/directdebit-frontend:latest-master
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:

@@ -1,9 +1,6 @@
 ---
 applications:
   - name: postgres
-    docker:
-      image: vixus0/pay-e2e-postgres:latest
-      username: govukpaypaas
     health-check-type: process
     memory: 1G
     env:
