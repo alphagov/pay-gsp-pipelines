@@ -29,7 +29,7 @@ stubs:
 
 selenium:
   hub:
-    tag: 3.9.1-actinium
+    tag: 3.141.59-vanadium
     podAnnotations:
       "sidecar.istio.io/inject": "false"
     ingress:
@@ -38,5 +38,6 @@ selenium:
   chrome:
     enabled: true
     replicas: 4
+    tag: 3.141.59-vanadium
     podAnnotations:
       "sidecar.istio.io/inject": "false"
