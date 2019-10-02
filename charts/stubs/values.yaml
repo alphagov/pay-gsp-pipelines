@@ -30,9 +30,13 @@ stubs:
 selenium:
   hub:
     tag: 3.9.1-actinium
+    podAnnotations:
+      "sidecar.istio.io/inject": "false"
     ingress:
       hosts:
         - selenium-hub
   chrome:
     enabled: true
     replicas: 4
+    podAnnotations:
+      "sidecar.istio.io/inject": "false"
