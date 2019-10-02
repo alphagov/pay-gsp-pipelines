@@ -67,6 +67,17 @@ spec:
           release: true
           pre_release: false
 
+      - name: stubs-release
+        type: github-release
+        icon: unarchive
+        source:
+          owner: alphagov
+          repository: pay-gsp-pipelines
+          access_token: ((github.api-token))
+          tag_filter: "stubs-v?([^v].*)"
+          release: true
+          pre_release: false
+
       - name: cardid-src
         type: git
         icon: github-circle
@@ -643,6 +654,8 @@ spec:
           passed: [deploy]
         - get: chart
           passed: [deploy]
+          trigger: true
+        - get: stubs-release
           trigger: true
         - task: card-tests
           file: pay-gsp/tasks/endtoend.yaml

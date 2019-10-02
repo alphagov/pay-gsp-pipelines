@@ -56,6 +56,17 @@ spec:
           release: false
           pre_release: true
 
+      - name: release
+        type: github-release
+        icon: archive
+        source:
+          owner: alphagov
+          repository: pay-gsp-pipelines
+          access_token: ((github.api-token))
+          tag_filter: "stubs-v?([^v].*)"
+          release: true
+          pre_release: false
+
       - name: endtoend-src
         type: git
         icon: github-circle
@@ -151,8 +162,8 @@ spec:
             labels_file: labels/labels.json
             tag_as_latest: true
 
-      - name: release
-        serial_groups: [endtoend, stubs, demo-service]
+      - name: pre-release
+        serial_groups: [endtoend, stubs, demo-service, release]
         plan:
         - get: pay-gsp
           trigger: true
@@ -181,11 +192,12 @@ spec:
 
       - name: deploy
         serial: true
+        serial_groups: [release]
         plan:
           - get: pay-gsp
-            passed: [release]
+            passed: [pre-release]
           - get: chart
-            passed: [release]
+            passed: [pre-release]
             trigger: true
           - task: helm-render
             file: pay-gsp/tasks/helm-render.yaml
@@ -195,3 +207,16 @@ spec:
             file: pay-gsp/tasks/deploy.yaml
             vars:
               release_name: stubs
+
+      - name: release
+        serial_groups: [release]
+        plan:
+        - get: chart
+          passed: [deploy]
+          trigger: true
+        - put: release
+          params:
+            name: chart/tag
+            tag: chart/tag
+            globs:
+              - chart/*
