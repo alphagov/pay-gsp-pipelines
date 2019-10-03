@@ -75,6 +75,10 @@ spec:
           value: "true"
         - name: RUN_MIGRATION
           value: "true"
+        - name: ENVIRONMENT
+          value: endtoend
+        - name: SENTRY_DSN
+          value: noop://localhost
         resources: {}
         ports:
           - name: app
