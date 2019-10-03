@@ -45,7 +45,7 @@ spec:
             - tasks
             - charts/pay
 
-      - name: chart
+      - name: chart-pre
         type: github-release
         icon: archive
         source:
@@ -56,7 +56,7 @@ spec:
           release: false
           pre_release: true
 
-      - name: release
+      - name: chart-release
         type: github-release
         icon: archive
         source:
@@ -619,7 +619,7 @@ spec:
           vars:
             chart_name: pay
 
-        - put: chart
+        - put: chart-pre
           params:
             name: chart-version/name
             tag: chart-version/tag
@@ -633,12 +633,13 @@ spec:
         plan:
           - get: pay-gsp
             passed: [pre-release]
-          - get: chart
+          - get: chart-pre
             passed: [pre-release]
             trigger: true
           - task: test-db-creds
             file: pay-gsp/tasks/test-db-creds.yaml
           - task: helm-render
+            input_mapping: { chart: chart-pre }
             file: pay-gsp/tasks/helm-render.yaml
             vars:
               release_name: test
@@ -652,7 +653,7 @@ spec:
         plan:
         - get: pay-gsp
           passed: [deploy]
-        - get: chart
+        - get: chart-pre
           passed: [deploy]
           trigger: true
         - get: stubs-release
@@ -672,12 +673,12 @@ spec:
 
       - name: release
         plan:
-        - get: chart
+        - get: chart-pre
           passed: [end-to-end]
           trigger: true
-        - put: release
+        - put: chart-release
           params:
-            name: chart/tag
-            tag: chart/tag
+            name: chart-pre/tag
+            tag: chart-pre/tag
             globs:
-              - chart/*
+              - chart-pre/*

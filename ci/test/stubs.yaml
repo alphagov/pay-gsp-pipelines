@@ -45,7 +45,7 @@ spec:
             - tasks
             - charts/stubs
 
-      - name: chart
+      - name: chart-pre
         type: github-release
         icon: archive
         source:
@@ -56,7 +56,7 @@ spec:
           release: false
           pre_release: true
 
-      - name: release
+      - name: chart-release
         type: github-release
         icon: archive
         source:
@@ -181,7 +181,7 @@ spec:
           file: pay-gsp/tasks/helm-package.yaml
           vars:
             chart_name: stubs
-        - put: chart
+        - put: chart-pre
           params:
             name: chart-version/name
             tag: chart-version/tag
@@ -195,10 +195,11 @@ spec:
         plan:
           - get: pay-gsp
             passed: [pre-release]
-          - get: chart
+          - get: chart-pre
             passed: [pre-release]
             trigger: true
           - task: helm-render
+            input_mapping: { chart: chart-pre }
             file: pay-gsp/tasks/helm-render.yaml
             vars:
               release_name: stubs
@@ -210,12 +211,12 @@ spec:
       - name: release
         serial_groups: [release]
         plan:
-        - get: chart
+        - get: chart-pre
           passed: [deploy]
           trigger: true
-        - put: release
+        - put: chart-release
           params:
-            name: chart/tag
-            tag: chart/tag
+            name: chart-pre/tag
+            tag: chart-pre/tag
             globs:
-              - chart/*
+              - chart-pre/*

@@ -35,8 +35,9 @@ run:
     gpg --export-secret-keys > ~/.gnupg/pubring.gpg
     KEY_ID="$(gpg --list-secret-keys --with-colons  | awk -F: '/uid:/ {print $10}' | head -n1)"
 
+    TIMESTAMP=$(date +'%Y%m%d.%H%M')
     APP_VERSION=$(git -C pay-gsp rev-parse --short HEAD)
-    CHART_VERSION="1.0.0-sha$APP_VERSION"
+    CHART_VERSION="1.0.0-$TIMESTAMP-$APP_VERSION"
 
     echo "$CHART_NAME" > chart-version/name
     echo "$CHART_VERSION" > chart-version/tag
