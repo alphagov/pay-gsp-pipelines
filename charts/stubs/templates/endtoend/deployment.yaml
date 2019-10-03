@@ -98,7 +98,7 @@ spec:
           - name: WEB_DRIVER
             value: CHROME_REMOTE
           - name: SELENIUM_HUB_URL
-            value: http://{{ .Release.Name }}-selenium-hub
+            value: http://{{ .Release.Name }}-selenium-hub:4444/wd/hub
           - name: CHROME_DRIVER_PATH
             value: /usr/bin/chromedriver
           - name: CHROMEDRIVER.PATH
