@@ -30,6 +30,7 @@ stubs:
 selenium:
   hub:
     tag: 3.141.59-vanadium
+    serviceType: ClusterIP
     podAnnotations:
       "sidecar.istio.io/inject": "false"
     ingress:
