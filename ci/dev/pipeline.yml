@@ -1,307 +1,379 @@
 ---
-apiVersion: concourse.k8s.io/v1beta1
-kind: Pipeline
-metadata:
-  labels:
-    controller-tools.k8s.io: "1.0"
-  name: deploy-paas
-  namespace: portfolio-pay-test
-spec:
-  exposed: true
-  config:
-    harbor_source: &harbor_source
-      username: ((harbor.harbor_username))
-      password: ((harbor.harbor_password))
-      harbor:
-        url: ((harbor.harbor_url))
-        prevent_vul: "false"
-      notary:
-        url: ((harbor.notary_url))
-        root_key: ((harbor.root_key))
-        delegate_key: ((harbor.ci_key))
-        passphrase:
-          root: ((harbor.notary_root_passphrase))
-          snapshot: ((harbor.notary_snapshot_passphrase))
-          targets: ((harbor.notary_targets_passphrase))
-          delegation: ((harbor.notary_delegation_passphrase))
-
-    resource_types:
-      - name: harbor
-        type: registry-image
-        privileged: true
-        source:
-          repository: govsvc/concourse-harbor-resource
-          tag: latest
-
-    resources:
-      - name: deploy-config
-        type: git
-        source:
-          uri: https://github.com/alphagov/pay-gsp-pipelines
-          branch: develop-andy
-          paths:
-            - manifests
-            - tasks
-
-      - name: admin-users
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/adminusers
-      - name: card-id
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/cardid
-      - name: connector
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/connector
-      - name: demo-service
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/demo-service
-      - name: direct-debit-connector
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/dd-connector
-      - name: direct-debit-frontend
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/dd-frontend
-      - name: frontend
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/frontend
-      - name: ledger
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/ledger
-      - name: products-ui
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/products-ui
-      - name: products
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/products
-      - name: public-api
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/publicapi
-      - name: public-auth
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/publicauth
-      - name: self-service
-        type: harbor
-        icon: docker
-        source:
-          <<: *harbor_source
-          repository: registry.((cluster.domain))/pay/selfservice
-
+groups:
+  - name: all
     jobs:
-      - name: deploy-admin-users
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: admin-users
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: admin-users }
-            params:
-              APP: admin-users
-      - name: deploy-card-id
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: card-id
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: card-id }
-            params:
-              APP: card-id
-      - name: deploy-connector
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: connector
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: connector }
-            params:
-              APP: connector
-      - name: deploy-demo-service
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: demo-service
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: demo-service }
-            params:
-              APP: demo-service
-      - name: deploy-direct-debit-connector
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: direct-debit-connector
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: direct-debit-connector }
-            params:
-              APP: direct-debit-connector
-      - name: deploy-direct-debit-frontend
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: direct-debit-frontend
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: direct-debit-frontend }
-            params:
-              APP: direct-debit-frontend
-      - name: deploy-frontend
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: frontend
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: frontend }
-            params:
-              APP: frontend
-      - name: deploy-ledger
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: ledger
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: ledger }
-            params:
-              APP: ledger
-      - name: deploy-products-ui
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: products-ui
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: products-ui }
-            params:
-              APP: products-ui
-      - name: deploy-products
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: products
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: products }
-            params:
-              APP: products
-      - name: deploy-public-api
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: public-api
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: public-api }
-            params:
-              APP: public-api
-      - name: deploy-public-auth
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: public-auth
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: public-auth }
-            params:
-              APP: public-auth
-      - name: deploy-self-service
-        serial: true
-        plan:
-          - get: deploy-config
-            trigger: true
-          - get: self-service
-            trigger: true
-            params:
-              skip_download: true
-          - task: deploy-to-paas
-            file: deploy-config/tasks/deploy-to-paas.yaml
-            input_mapping: { image: self-service }
-            params:
-              APP: self-service
+      - deploy-admin-users
+      - deploy-card-id
+      - deploy-connector
+      - deploy-demo-service
+      - deploy-direct-debit-connector
+      - deploy-direct-debit-frontend
+      - deploy-frontend
+      - deploy-ledger
+      - deploy-products-ui
+      - deploy-products
+      - deploy-public-api
+      - deploy-public-auth
+      - deploy-self-service
+      - pause-pipeline
+      - switch-off-dev-env
+      - stop-all-apps
+      - start-all-apps
+  - name: deploy
+    jobs:
+      - deploy-admin-users
+      - deploy-card-id
+      - deploy-connector
+      - deploy-demo-service
+      - deploy-direct-debit-connector
+      - deploy-direct-debit-frontend
+      - deploy-frontend
+      - deploy-ledger
+      - deploy-products-ui
+      - deploy-products
+      - deploy-public-api
+      - deploy-public-auth
+      - deploy-self-service
+  - name: operations
+    jobs:
+      - pause-pipeline
+      - switch-off-dev-env
+      - stop-all-apps
+      - start-all-apps
+
+resource_types:
+  - name: fly
+    type: docker-image
+    source:
+      repository: troykinsella/concourse-fly-resource
+      tag: 2.0.1
+
+resources:
+  - name: deploy-config
+    type: git
+    source:
+      uri: https://github.com/alphagov/pay-gsp-pipelines
+      branch: develop-andy
+      paths:
+        - manifests
+        - tasks
+  - name: every-night-at-6pm
+    type: time
+    source:
+      start: 18:00
+      stop: 18:30
+      location: Europe/London
+      days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+  - name: andy-dev-env-pipeline
+    type: fly
+    source:
+      url: https://cd.gds-reliability.engineering
+      username: pay-deploy
+      password: ((readonly_local_user_password))
+      team: pay-deploy
+
+  - name: admin-users
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/adminusers
+  - name: card-id
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/cardid
+  - name: connector
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/connector
+  - name: demo-service
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/demo-service
+  - name: direct-debit-connector
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/dd-connector
+  - name: direct-debit-frontend
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/dd-frontend
+  - name: frontend
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/frontend
+  - name: ledger
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/ledger
+  - name: products-ui
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/products-ui
+  - name: products
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/products
+  - name: public-api
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/publicapi
+  - name: public-auth
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/publicauth
+  - name: self-service
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/selfservice
+
+jobs:
+  - name: pause-pipeline
+    serial: true
+    plan:
+      - put: andy-dev-env-pipeline
+        params:
+          options: pause-pipeline -p andy-dev-env
+
+  - name: stop-all-apps
+    serial: true
+    plan:
+      - task: stop-all-apps
+        config: &all-apps-config
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: cf7
+          params:
+            CF_USERNAME: ((cf-username))
+            CF_PASSWORD: ((cf-password))
+            ACTION: stop
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              cf login -a https://api.london.cloud.service.gov.uk \
+                -u $CF_USERNAME -p $CF_PASSWORD \
+                -o govuk-pay -s andy
+              cf install-plugin -f do-all
+              cf do-all $ACTION {}
+
+  - name: start-all-apps
+    serial: true
+    plan:
+      - task: start-all-apps
+        config:
+          <<: *all-apps-config
+          params:
+            CF_USERNAME: ((cf-username))
+            CF_PASSWORD: ((cf-password))
+            ACTION: start
+
+  - name: switch-off-dev-env
+    serial: true
+    plan:
+      - get: every-night-at-6pm
+        trigger: true
+      - task: stop-all-apps
+        config: *all-apps-config
+      - put: andy-dev-env-pipeline
+        params:
+          options: pause-pipeline -p andy-dev-env
+
+  - name: deploy-admin-users
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: admin-users
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: admin-users }
+        params:
+          APP: admin-users
+  - name: deploy-card-id
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: card-id
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: card-id }
+        params:
+          APP: card-id
+  - name: deploy-connector
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: connector
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: connector }
+        params:
+          APP: connector
+  - name: deploy-demo-service
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: demo-service
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: demo-service }
+        params:
+          APP: demo-service
+  - name: deploy-direct-debit-connector
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: direct-debit-connector
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: direct-debit-connector }
+        params:
+          APP: direct-debit-connector
+  - name: deploy-direct-debit-frontend
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: direct-debit-frontend
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: direct-debit-frontend }
+        params:
+          APP: direct-debit-frontend
+  - name: deploy-frontend
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: frontend
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: frontend }
+        params:
+          APP: frontend
+  - name: deploy-ledger
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: ledger
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: ledger }
+        params:
+          APP: ledger
+  - name: deploy-products-ui
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: products-ui
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: products-ui }
+        params:
+          APP: products-ui
+  - name: deploy-products
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: products
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: products }
+        params:
+          APP: products
+  - name: deploy-public-api
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: public-api
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: public-api }
+        params:
+          APP: public-api
+  - name: deploy-public-auth
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: public-auth
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: public-auth }
+        params:
+          APP: public-auth
+  - name: deploy-self-service
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - get: self-service
+        trigger: true
+        params:
+          skip_download: true
+      - task: deploy-to-paas
+        file: deploy-config/tasks/deploy-to-paas.yaml
+        input_mapping: { image: self-service }
+        params:
+          APP: self-service

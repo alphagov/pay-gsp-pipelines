@@ -8,8 +8,8 @@ inputs:
   - name: image
   - name: deploy-config
 params:
-  CF_USER: ((cf-credentials.username))
-  CF_PASSWORD: ((cf-credentials.password))
+  CF_USER: ((cf-username))
+  CF_PASSWORD: ((cf-password))
 run:
   path: bash
   args:
