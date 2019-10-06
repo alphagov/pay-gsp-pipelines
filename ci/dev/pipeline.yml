@@ -156,6 +156,11 @@ resources:
     icon: docker
     source:
       repository: postgres
+  - name: sqs
+    type: docker-image
+    icon: docker
+    source:
+      repository: roribio16/alpine-sqs
   - name: selenium-hub
     type: docker-image
     icon: docker
@@ -422,6 +427,9 @@ jobs:
         - get: postgres
           params:
             skip_download: true
+        - get: sqs
+          params:
+            skip_download: true
         - get: egress
           params:
             skip_download: true
@@ -437,6 +445,11 @@ jobs:
           input_mapping: { image: postgres }
           params:
             APP: postgres
+        - task: deploy-sqs-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: sqs }
+          params:
+            APP: sqs
         - task: deploy-egress-to-paas
           file: deploy-config/tasks/deploy-to-paas.yaml
           input_mapping: { image: egress }

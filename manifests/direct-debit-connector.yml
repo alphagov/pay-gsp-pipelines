@@ -4,6 +4,7 @@ applications:
     health-check-type: process
     memory: 1G
     env:
+      ENVIRONMENT: ((developer))
       ADMIN_PORT: '10201'
       DB_HOST: pay-db-((developer)).apps.internal
       DB_SSL_OPTION: ssl=false
@@ -31,5 +32,6 @@ applications:
       DISABLE_INTERNAL_HTTPS: 'true'
       JAVA_OPTS: -Xms512m -Xmx1G
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+      SENTRY_DSN: noop://localhost
     routes:
     - route: pay-directdebit-connector-((developer)).london.cloudapps.digital
