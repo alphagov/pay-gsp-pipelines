@@ -5,7 +5,6 @@ groups:
       - deploy-admin-users
       - deploy-card-id
       - deploy-connector
-      - deploy-demo-service
       - deploy-direct-debit-connector
       - deploy-direct-debit-frontend
       - deploy-frontend
@@ -15,7 +14,8 @@ groups:
       - deploy-public-api
       - deploy-public-auth
       - deploy-self-service
-      - pause-pipeline
+      - deploy-stubs
+      - deploy-tools
       - switch-off-dev-env
       - stop-all-apps
       - start-all-apps
@@ -24,7 +24,6 @@ groups:
       - deploy-admin-users
       - deploy-card-id
       - deploy-connector
-      - deploy-demo-service
       - deploy-direct-debit-connector
       - deploy-direct-debit-frontend
       - deploy-frontend
@@ -34,9 +33,10 @@ groups:
       - deploy-public-api
       - deploy-public-auth
       - deploy-self-service
+      - deploy-stubs
+      - deploy-tools
   - name: operations
     jobs:
-      - pause-pipeline
       - switch-off-dev-env
       - stop-all-apps
       - start-all-apps
@@ -88,11 +88,6 @@ resources:
     icon: docker
     source:
       repository: registry.london.portfolio.govsvc.uk/pay/connector
-  - name: demo-service
-    type: docker-image
-    icon: docker
-    source:
-      repository: registry.london.portfolio.govsvc.uk/pay/demo-service
   - name: direct-debit-connector
     type: docker-image
     icon: docker
@@ -139,14 +134,42 @@ resources:
     source:
       repository: registry.london.portfolio.govsvc.uk/pay/selfservice
 
-jobs:
-  - name: pause-pipeline
-    serial: true
-    plan:
-      - put: andy-dev-env-pipeline
-        params:
-          options: pause-pipeline -p andy-dev-env
+  - name: demo-service
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/demo-service
+  - name: stubs
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/stubs
 
+  - name: egress
+    type: docker-image
+    icon: docker
+    source:
+      repository: govukpay/egress
+      tag: latest-master
+  - name: postgres
+    type: docker-image
+    icon: docker
+    source:
+      repository: postgres
+  - name: selenium-hub
+    type: docker-image
+    icon: docker
+    source:
+      repository: selenium/hub
+      tag: 3.9.1-actinium
+  - name: selenium-chrome
+    type: docker-image
+    icon: docker
+    source:
+      repository: selenium/node-chrome
+      tag: 3.9.1-actinium
+
+jobs:
   - name: stop-all-apps
     serial: true
     plan:
@@ -237,20 +260,6 @@ jobs:
         input_mapping: { image: connector }
         params:
           APP: connector
-  - name: deploy-demo-service
-    serial: true
-    plan:
-      - get: deploy-config
-        trigger: true
-      - get: demo-service
-        trigger: true
-        params:
-          skip_download: true
-      - task: deploy-to-paas
-        file: deploy-config/tasks/deploy-to-paas.yaml
-        input_mapping: { image: demo-service }
-        params:
-          APP: demo-service
   - name: deploy-direct-debit-connector
     serial: true
     plan:
@@ -377,3 +386,69 @@ jobs:
         input_mapping: { image: self-service }
         params:
           APP: self-service
+
+  - name: deploy-stubs
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - in_parallel:
+        - get: demo-service
+          trigger: true
+          params:
+            skip_download: true
+        - get: stubs
+          trigger: true
+          params:
+            skip_download: true
+      - in_parallel:
+        - task: deploy-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: demo-service }
+          params:
+            APP: demo-service
+        - task: deploy-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: stubs }
+          params:
+            APP: stubs
+
+  - name: deploy-tools
+    serial: true
+    plan:
+      - get: deploy-config
+        trigger: true
+      - in_parallel:
+        - get: postgres
+          params:
+            skip_download: true
+        - get: egress
+          params:
+            skip_download: true
+        - get: selenium-hub
+          params:
+            skip_download: true
+        - get: selenium-chrome
+          params:
+            skip_download: true
+      - in_parallel:
+        - task: deploy-postgres-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: postgres }
+          params:
+            APP: postgres
+        - task: deploy-egress-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: egress }
+          params:
+            APP: egress
+        - task: deploy-selenium-hub-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: selenium-hub }
+          params:
+            APP: selenium-hub
+        - task: deploy-chrome-to-paas
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: selenium-chrome }
+          params:
+            APP: selenium-chrome

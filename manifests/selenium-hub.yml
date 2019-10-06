@@ -1,0 +1,11 @@
+---
+applications:
+  - name: selenium-hub
+    health-check-type: process
+    memory: 1G
+    env:
+      GRID_HUB_PORT: 4444
+      GRID_BROWSER_TIMEOUT: 60
+    routes:
+    - route: pay-selenium-hub-((developer)).london.cloudapps.digital
+    - route: pay-selenium-hub-((developer)).apps.internal
