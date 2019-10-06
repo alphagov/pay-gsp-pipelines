@@ -2,7 +2,7 @@
 applications:
   - name: end-to-end
     health-check-type: process
-    disk_quota: 2G
+    disk_quota: 4G
     memory: 2G
     env:
       DB_CONNECTOR_HOST: postgres.apps.internal:5432
