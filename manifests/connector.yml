@@ -5,7 +5,7 @@ applications:
     memory: 1G
     env:
       ADMIN_PORT: '9301'
-      DB_HOST: pay-db-((developer)).apps.internal
+      DB_HOST: postgres.apps.internal
       DB_SSL_OPTION: ssl=false
       DB_USER: connector
       DB_PASSWORD: mysecretpassword
@@ -28,7 +28,7 @@ applications:
       JPA_LOG_LEVEL: WARNING
       JPA_SQL_LOG_LEVEL: WARNING
       HTTP_PROXY_ENABLED: 'false'
-      HTTP_PROXY_HOST: pay-egress-((developer)).apps.internal
+      HTTP_PROXY_HOST: egress.apps.internal
       HTTP_PROXY_PORT: '8080'
       HTTP_PROXY_SCHEME: http
       AUTH_READ_TIMEOUT_SECONDS: '1'
@@ -43,18 +43,18 @@ applications:
       XRAY_ENABLED: false
       CAPTURE_USING_SQS_FEATURE_FLAG: 'true'
       AWS_SQS_REGION: region-1
-      AWS_SQS_CAPTURE_QUEUE_URL: http://pay-sqs-((developer)).apps.internal:9324/queue/pay_capture_queue
+      AWS_SQS_CAPTURE_QUEUE_URL: http://sqs.apps.internal:9324/queue/pay_capture_queue
       AWS_SECRET_KEY: x
       AWS_ACCESS_KEY: x
       AWS_SQS_NON_STANDARD_SERVICE_ENDPOINT: 'true'
-      AWS_SQS_ENDPOINT: http://pay-sqs-((developer)).apps.internal:9324
+      AWS_SQS_ENDPOINT: http://sqs.apps.internal:9324
       AWS_SQS_MESSAGE_MAXIMUM_WAIT_TIME_IN_SECONDS: '20'
       EVENT_QUEUE_ENABLED: 'true'
-      AWS_SQS_PAYMENT_EVENT_QUEUE_URL: http://pay-sqs-((developer)).apps.internal:9324/queue/pay_event_queue
+      AWS_SQS_PAYMENT_EVENT_QUEUE_URL: http://sqs.apps.internal:9324/queue/pay_event_queue
       RUN_MIGRATION: 'true'
       RUN_APP: 'true'
       DISABLE_INTERNAL_HTTPS: 'true'
       JAVA_OPTS: -Xms512m -Xmx1G
     routes:
     - route: pay-connector-((developer)).london.cloudapps.digital
-    - route: pay-connector-((developer)).apps.internal
+    - route: connector.apps.internal

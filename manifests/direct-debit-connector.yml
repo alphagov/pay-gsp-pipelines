@@ -1,19 +1,19 @@
 ---
 applications:
-  - name: directdebit-connector
+  - name: direct-debit-connector
     health-check-type: process
     memory: 1G
     env:
       ENVIRONMENT: ((developer))
       ADMIN_PORT: '10201'
-      DB_HOST: pay-db-((developer)).apps.internal
+      DB_HOST: postgres.apps.internal
       DB_SSL_OPTION: ssl=false
       DB_USER: directdebit_connector
       DB_PASSWORD: mysecretpassword
-      HTTP_PROXY_HOST: pay-egress-((developer)).apps.internal
+      HTTP_PROXY_HOST: egress.apps.internal
       HTTP_PROXY_PORT: '8080'
       FRONTEND_URL: https://pay-frontend-((developer)).london.cloudapps.digital
-      ADMINUSERS_URL: http://pay-adminusers-((developer)).london.cloudapps.digital
+      ADMINUSERS_URL: http://pay-admin-users-((developer)).london.cloudapps.digital
       GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ACCESS_TOKEN: supersecret
       GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_URL: https://pay-stubs-((developer)).london.cloudapps.digital/stub/gocardless/
       GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_WEBHOOK_SECRET: supersecret
@@ -34,4 +34,4 @@ applications:
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
       SENTRY_DSN: noop://localhost
     routes:
-    - route: pay-directdebit-connector-((developer)).london.cloudapps.digital
+    - route: pay-direct-debit-connector-((developer)).london.cloudapps.digital

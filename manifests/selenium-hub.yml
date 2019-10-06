@@ -8,4 +8,4 @@ applications:
       GRID_BROWSER_TIMEOUT: 60
     routes:
     - route: pay-selenium-hub-((developer)).london.cloudapps.digital
-    - route: pay-selenium-hub-((developer)).apps.internal
+    - route: selenium-hub.apps.internal

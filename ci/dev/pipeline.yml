@@ -37,6 +37,7 @@ groups:
       - deploy-tools
   - name: operations
     jobs:
+      - create-dev-env
       - switch-off-dev-env
       - stop-all-apps
       - start-all-apps
@@ -144,6 +145,11 @@ resources:
     icon: docker
     source:
       repository: registry.london.portfolio.govsvc.uk/pay/stubs
+  - name: end-to-end
+    type: docker-image
+    icon: docker
+    source:
+      repository: registry.london.portfolio.govsvc.uk/pay/endtoend
 
   - name: egress
     type: docker-image
@@ -167,7 +173,7 @@ resources:
     source:
       repository: selenium/hub
       tag: 3.9.1-actinium
-  - name: selenium-chrome
+  - name: chrome
     type: docker-image
     icon: docker
     source:
@@ -175,6 +181,78 @@ resources:
       tag: 3.9.1-actinium
 
 jobs:
+  - name: create-dev-env
+    serial: true
+    plan:
+      # Due to a bug in CF, we need to create these first
+      - task: create-internal-routes
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: cf7
+          params:
+            CF_USERNAME: ((cf-username))
+            CF_PASSWORD: ((cf-password))
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              cf login -a https://api.london.cloud.service.gov.uk \
+                -u $CF_USERNAME -p $CF_PASSWORD \
+                -o govuk-pay -s andy
+              cf create-route apps.internal --hostname admin-users
+              cf create-route apps.internal --hostname card-id
+              cf create-route apps.internal --hostname connector
+              cf create-route apps.internal --hostname egress
+              cf create-route apps.internal --hostname postgres
+              cf create-route apps.internal --hostname sqs
+              cf create-route apps.internal --hostname chrome
+              cf create-route apps.internal --hostname selenium-hub
+      - task: create-apps
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: cf7
+          params:
+            CF_USERNAME: ((cf-username))
+            CF_PASSWORD: ((cf-password))
+            ACTION: create-route
+          run:
+            path: bash
+            args:
+            - -c
+            - |
+              cf login -a https://api.london.cloud.service.gov.uk \
+                -u $CF_USERNAME -p $CF_PASSWORD \
+                -o govuk-pay -s andy
+              cf create-app --app-type docker admin-users
+              cf create-app --app-type docker card-id
+              cf create-app --app-type docker connector
+              cf create-app --app-type docker demo-service
+              cf create-app --app-type docker direct-debit-connector
+              cf create-app --app-type docker direct-debit-frontend
+              cf create-app --app-type docker egress
+              cf create-app --app-type docker end-to-end
+              cf create-app --app-type docker frontend
+              cf create-app --app-type docker ledger
+              cf create-app --app-type docker postgres
+              cf create-app --app-type docker products-ui
+              cf create-app --app-type docker products
+              cf create-app --app-type docker public-api
+              cf create-app --app-type docker public-auth
+              cf create-app --app-type docker chrome
+              cf create-app --app-type docker selenium-hub
+              cf create-app --app-type docker self-service
+              cf create-app --app-type docker sqs
+              cf create-app --app-type docker stubs
+
   - name: stop-all-apps
     serial: true
     plan:
@@ -406,17 +484,26 @@ jobs:
           trigger: true
           params:
             skip_download: true
+        - get: end-to-end
+          trigger: true
+          params:
+            skip_download: true
       - in_parallel:
-        - task: deploy-to-paas
+        - task: deploy-demmo-service
           file: deploy-config/tasks/deploy-to-paas.yaml
           input_mapping: { image: demo-service }
           params:
             APP: demo-service
-        - task: deploy-to-paas
+        - task: deploy-stubs
           file: deploy-config/tasks/deploy-to-paas.yaml
           input_mapping: { image: stubs }
           params:
             APP: stubs
+        - task: deploy-end-to-end
+          file: deploy-config/tasks/deploy-to-paas.yaml
+          input_mapping: { image: end-to-end }
+          params:
+            APP: end-to-end
 
   - name: deploy-tools
     serial: true
@@ -436,7 +523,7 @@ jobs:
         - get: selenium-hub
           params:
             skip_download: true
-        - get: selenium-chrome
+        - get: chrome
           params:
             skip_download: true
       - in_parallel:
@@ -462,6 +549,6 @@ jobs:
             APP: selenium-hub
         - task: deploy-chrome-to-paas
           file: deploy-config/tasks/deploy-to-paas.yaml
-          input_mapping: { image: selenium-chrome }
+          input_mapping: { image: chrome }
           params:
-            APP: selenium-chrome
+            APP: chrome

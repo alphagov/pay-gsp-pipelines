@@ -6,4 +6,4 @@ applications:
     env:
       POSTGRES_PASSWORD: mysecretpassword
     routes:
-    - route: pay-db-((developer)).apps.internal
+    - route: postgres.apps.internal

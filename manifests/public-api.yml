@@ -1,15 +1,15 @@
 ---
 applications:
-  - name: publicapi
+  - name: public-api
     health-check-type: process
     memory: 1G
     env:
       ADMIN_PORT: '9101'
       CONNECTOR_URL: https://pay-connector-((developer)).london.cloudapps.digital
-      CONNECTOR_DD_URL: https://pay-directdebit-connector-((developer)).london.cloudapps.digital
-      PUBLIC_AUTH_URL: https://pay-publicauth-((developer)).london.cloudapps.digital/v1/api/auth
+      CONNECTOR_DD_URL: https://pay-direct-debit-connector-((developer)).london.cloudapps.digital
+      PUBLIC_AUTH_URL: https://pay-public-auth-((developer)).london.cloudapps.digital/v1/api/auth
       TOKEN_API_HMAC_SECRET: qwer9yuhgf
-      PUBLICAPI_BASE: https://pay-publicapi-((developer)).london.cloudapps.digital
+      PUBLICAPI_BASE: https://pay-public-api-((developer)).london.cloudapps.digital
       LEDGER_URL: https://pay-ledger-((developer)).london.cloudapps.digital
       RUN_MIGRATION: 'true'
       RUN_APP: 'true'
@@ -17,4 +17,4 @@ applications:
       JAVA_OPTS: -Xms512m -Xmx1G
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     routes:
-    - route: pay-publicapi-((developer)).london.cloudapps.digital
+    - route: pay-public-api-((developer)).london.cloudapps.digital

@@ -4,9 +4,9 @@ applications:
     health-check-type: process
     memory: 1G
     env:
-      HUB_HOST: pay-selenium-hub-((developer)).apps.internal
+      HUB_HOST: selenium-hub.apps.internal
       HUB_PORT: 4444
       NODE_MAX_INSTANCES: 4
       NODE_MAX_SESSION: 4
     routes:
-    - route: pay-selenium-chrome-((developer)).apps.internal
+    - route: chrome.apps.internal

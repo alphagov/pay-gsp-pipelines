@@ -1,18 +1,18 @@
 ---
 applications:
-  - name: selfservice
+  - name: self-service
     health-check-type: process
     memory: 1G
     env:
       SESSION_ENCRYPTION_KEY: asdjhbwefbo23r23rbfik2roiwhefwbqw
-      PUBLIC_AUTH_URL: https://pay-publicauth-((developer)).london.cloudapps.digital/v1/frontend/auth
+      PUBLIC_AUTH_URL: https://pay-public-auth-((developer)).london.cloudapps.digital/v1/frontend/auth
       CONNECTOR_URL: https://pay-connector-((developer)).london.cloudapps.digital
-      DIRECT_DEBIT_CONNECTOR_URL: https://pay-directdebit-connector-((developer)).london.cloudapps.digital
-      ADMINUSERS_URL: https://pay-adminusers-((developer)).london.cloudapps.digital
-      SELFSERVICE_BASE: https://pay-selfservice-((developer)).london.cloudapps.digital
+      DIRECT_DEBIT_CONNECTOR_URL: https://pay-direct-debit-connector-((developer)).london.cloudapps.digital
+      ADMINUSERS_URL: https://pay-admin-users-((developer)).london.cloudapps.digital
+      SELFSERVICE_BASE: https://pay-self-service-((developer)).london.cloudapps.digital
       PRODUCTS_URL: https://pay-products-((developer)).london.cloudapps.digital
       PRODUCTS_API_TOKEN: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
-      PRODUCTS_FRIENDLY_BASE_URI: https://pay-productsui-((developer)).london.cloudapps.digital/redirect
+      PRODUCTS_FRIENDLY_BASE_URI: https://pay-products-ui-((developer)).london.cloudapps.digital/redirect
       LOGIN_ATTEMPT_CAP: '3'
       COOKIE_MAX_AGE: '10800000'
       NODE_WORKER_COUNT: '1'
@@ -25,11 +25,11 @@ applications:
       GOCARDLESS_LIVE_CLIENT_ID: gocardless-live-oauth-client-id
       GOCARDLESS_TEST_OAUTH_BASE_URL: https://connect-sandbox.gocardless.com
       GOCARDLESS_LIVE_OAUTH_BASE_URL: https://connect-sandbox.gocardless.com
-      SELFSERVICE_URL: https://pay-selfservice-((developer)).london.cloudapps.digital
+      SELFSERVICE_URL: https://pay-self-service-((developer)).london.cloudapps.digital
       RUN_MIGRATION: 'true'
       RUN_APP: 'true'
       DISABLE_INTERNAL_HTTPS: 'true'
       JAVA_OPTS: -Xms512m -Xmx1G
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     routes:
-    - route: pay-selfservice-((developer)).london.cloudapps.digital
+    - route: pay-self-service-((developer)).london.cloudapps.digital

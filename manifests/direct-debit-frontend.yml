@@ -1,6 +1,6 @@
 ---
 applications:
-  - name: directdebit-frontend
+  - name: direct-debit-frontend
     health-check-type: process
     memory: 1G
     env:
@@ -8,6 +8,6 @@ applications:
       COOKIE_MAX_AGE: '5400000'
       SESSION_ENCRYPTION_KEY: asdjhbwefbo23r23rbfik2roiwhefwbqw
       CONNECTOR_URL: https://pay-connector-((developer)).london.cloudapps.digital
-      ADMINUSERS_URL: https://pay-adminusers-((developer)).london.cloudapps.digital
+      ADMINUSERS_URL: https://pay-admin-users-((developer)).london.cloudapps.digital
     routes:
-    - route: pay-directdebit-frontend-((developer)).london.cloudapps.digital
+    - route: pay-direct-debit-frontend-((developer)).london.cloudapps.digital

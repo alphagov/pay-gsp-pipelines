@@ -1,6 +1,6 @@
 ---
 applications:
-  - name: cardid
+  - name: card-id
     health-check-type: process
     memory: 1G
     env:
@@ -14,4 +14,4 @@ applications:
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     routes:
     - route: pay-cardid-((developer)).london.cloudapps.digital
-    - route: pay-cardid-((developer)).apps.internal
+    - route: card-id.apps.internal

@@ -6,4 +6,4 @@ applications:
     env:
       SQUID_CONFIG: YWNsIFNTTF9wb3J0cyBwb3J0IDQ0MwphY2wgU2FmZV9wb3J0cyBwb3J0IDgwCmFjbCBTYWZlX3BvcnRzIHBvcnQgNDQzCmh0dHBfYWNjZXNzIGFsbG93IGFsbApodHRwX3BvcnQgODA4MApjYWNoZSBkZW55IGFsbAphY2Nlc3NfbG9nIG5vbmUKY2FjaGVfbG9nIC9kZXYvbnVsbApjYWNoZV9zdG9yZV9sb2cgbm9uZQpwaWRfZmlsZW5hbWUgbm9uZQo=
     routes:
-    - route: pay-egress-((developer)).apps.internal
+    - route: egress.apps.internal
