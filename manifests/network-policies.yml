@@ -24,6 +24,13 @@ network-policies:
     dest: selenium-hub
     ports: 4444-4444
 
+  - src: chrome
+    dest: selenium-hub
+    ports: 4444-4444
+  - src: selenium-hub
+    dest: chrome
+    ports: 5555-5555
+
   - src: adminusers
     dest: postgres
     ports: 5432-5432
