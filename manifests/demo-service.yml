@@ -4,7 +4,8 @@ applications:
     health-check-type: process
     memory: 1G
     env:
-      PUBLICAPI_URL: https://pay-publicapi-((developer)).london.cloudapps.digital
-      PAY_API_URL: https://pay-publicapi-((developer)).london.cloudapps.digital
+      NODE_ENV: production
+      DISABLE_SSL: true
+      PAY_API_URL: https://pay-public-api-((developer)).london.cloudapps.digital
     routes:
     - route: pay-demo-service-((developer)).london.cloudapps.digital

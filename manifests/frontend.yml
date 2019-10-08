@@ -6,13 +6,13 @@ applications:
     env:
       SESSION_ENCRYPTION_KEY: asdjhbwefbo23r23rbfik2roiwhefwbqw
       COOKIE_MAX_AGE: '5400000'
-      CONNECTOR_TOKEN_URL: https://pay-connector-((developer)).london.cloudapps.digital/v1/frontend/tokens/{chargeTokenId}
-      CONNECTOR_URL: https://pay-connector-((developer)).london.cloudapps.digital
-      CONNECTOR_HOST: http://pay-connector-((developer)).apps.internal:8080
+      CONNECTOR_TOKEN_URL: http://connector.apps.internal:8080/v1/frontend/tokens/{chargeTokenId}
+      CONNECTOR_URL: http://connector.apps.internal:8080
+      CONNECTOR_HOST: http://connector.apps.internal:8080
       ANALYTICS_TRACKING_ID: testing-123
       CARDID_HOST: http://card-id.apps.internal:8080
       NODE_WORKER_COUNT: '1'
       FRONTEND_URL: https://pay-frontend-((developer)).london.cloudapps.digital
-      ADMINUSERS_URL: http://pay-admin-users-((developer)).apps.internal:8080
+      ADMINUSERS_URL: http://admin-users.apps.internal:8080
     routes:
     - route: pay-frontend-((developer)).london.cloudapps.digital

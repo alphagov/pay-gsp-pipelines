@@ -1,5 +1,5 @@
 network-policies:
-  - src: adminusers
+  - src: admin-users
     dest: egress
     ports: 8080-8080
   - src: connector
@@ -31,7 +31,7 @@ network-policies:
     dest: chrome
     ports: 5555-5555
 
-  - src: adminusers
+  - src: admin-users
     dest: postgres
     ports: 5432-5432
   - src: connector
@@ -47,6 +47,9 @@ network-policies:
     dest: postgres
     ports: 5432-5432
   - src: ledger
+    dest: postgres
+    ports: 5432-5432
+  - src: end-to-end
     dest: postgres
     ports: 5432-5432
 
