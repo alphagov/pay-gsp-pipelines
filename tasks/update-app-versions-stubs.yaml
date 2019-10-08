@@ -22,22 +22,27 @@ run:
     - |
       set -o errexit -o nounset -o pipefail
 
+      repo() {
+        local repository=$(cat "$1/repository")
+        echo "${repository}@"
+      }
+
       ref() {
-        jq -r '.[0].Config.Labels.commit' < "$1/docker_inspect.json"
+        cat "$1/digest"
       }
 
       cat > new_values.yaml <<EOF
       endtoend:
         image:
-          repository: "$(cat endtoend-image/repository)"
+          repository: "$(repo endtoend-image)"
           tag: "$(ref endtoend-image)"
       demoService:
         image:
-          repository: "$(cat demo-service-image/repository)"
+          repository: "$(repo demo-service-image)"
           tag: "$(ref demo-service-image)"
       stubs:
         image:
-          repository: "$(cat stubs-image/repository)"
+          repository: "$(repo stubs-image)"
           tag: "$(ref stubs-image)"
       EOF
 
