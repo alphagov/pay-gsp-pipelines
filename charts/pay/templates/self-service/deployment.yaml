@@ -72,6 +72,8 @@ spec:
           value: http://selfservice/
         - name: SMARTPAY_3DS_ENABLED
           value: "true"
+        - name: SESSION_ENCRYPTION_KEY
+          value: asdjhbwefbo23r23rbfik2roiwhefwbqw
         resources: {}
         ports:
           - name: app
