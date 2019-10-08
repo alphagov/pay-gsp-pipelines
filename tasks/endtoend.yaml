@@ -23,4 +23,4 @@ run:
       setup-kube-deployer
       pod=$(kubectl get po -l app=endtoend -n "$RELEASE_NAMESPACE" -o jsonpath='{.items[*].metadata.name}')
       echo "running $TEST_SUITE endtoend tests in pod $pod"
-      kubectl exec -it "$pod" -n "$RELEASE_NAMESPACE" -c endtoend -- "/app/bin/e2e-$TEST_SUITE"
+      kubectl exec -it "$pod" -n "$RELEASE_NAMESPACE" -c endtoend -- MVN_ARGS="-o -Dsurefire.skipAfterFailureCount=1" "/app/bin/e2e-$TEST_SUITE"
