@@ -74,6 +74,7 @@ spec:
           username: re-autom8-ci
           password: ((github.api-token))
           uri: https://github.com/alphagov/pay-endtoend
+          branch: docker-maven-cache
 
       - name: endtoend-image
         type: harbor
