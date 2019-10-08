@@ -50,7 +50,7 @@ spec:
           - name: DB_PASSWORD
             value: mysecretpassword
           - name: DEMOSERVICE_PAYSTART_URL
-            value: http://test-demo-service
+            value: http://{{ .Release.Name }}-demo-service
           - name: PUBLICAPI_URL
             value: http://test-public-api
           - name: PUBLIC_AUTH_URL
@@ -72,7 +72,7 @@ spec:
           - name: SELFSERVICE_OTP_KEY
             value: 55w7bwl169
           - name: STUBS_URL
-            value: http://test-stubs
+            value: http://{{ .Release.Name }}-stubs
           - name: DB_SETUP_FOR_SMOKE
             value: "true"
           - name: FRONTEND_URL
