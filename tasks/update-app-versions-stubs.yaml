@@ -29,13 +29,16 @@ run:
       cat > new_values.yaml <<EOF
       endtoend:
         image:
-          tag: $(ref endtoend-image)
+          repository: "$(cat endtoend-image/repository)"
+          tag: "$(ref endtoend-image)"
       demoService:
         image:
-          tag: $(ref demo-service-image)
+          repository: "$(cat demo-service-image/repository)"
+          tag: "$(ref demo-service-image)"
       stubs:
         image:
-          tag: $(ref stubs-image)
+          repository: "$(cat stubs-image/repository)"
+          tag: "$(ref stubs-image)"
       EOF
 
       spruce merge pay-gsp/charts/stubs/values.yaml new_values.yaml > tmp
