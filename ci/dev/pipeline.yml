@@ -18,7 +18,7 @@ groups:
       - deploy-tools
       - switch-off-dev-env
       - stop-all-apps
-      - start-all-apps
+      - restart-all-apps
   - name: deploy
     jobs:
       - deploy-admin-users
@@ -40,7 +40,7 @@ groups:
       - create-dev-env
       - switch-off-dev-env
       - stop-all-apps
-      - start-all-apps
+      - restart-all-apps
 
 resource_types:
   - name: fly
@@ -48,6 +48,12 @@ resource_types:
     source:
       repository: troykinsella/concourse-fly-resource
       tag: 2.0.1
+
+  - name: cf-cli
+    type: docker-image
+    source:
+      repository: nulldriver/cf-cli-resource
+      tag: latest
 
 resources:
   - name: deploy-config
@@ -65,6 +71,15 @@ resources:
       stop: 18:30
       location: Europe/London
       days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+  - name: andy-paas-space
+    type: cf-cli
+    source:
+      api: https://api.london.cloud.service.gov.uk
+      org: govuk-pay
+      space: andy
+      username: ((cf-username))
+      password: ((cf-password))
 
   - name: andy-dev-env-pipeline
     type: fly
@@ -257,7 +272,7 @@ jobs:
     serial: true
     plan:
       - task: stop-all-apps
-        config: &all-apps-config
+        config: &stop-all-apps-config
           platform: linux
           image_resource:
             type: docker-image
@@ -277,18 +292,89 @@ jobs:
                 -u $CF_USERNAME -p $CF_PASSWORD \
                 -o govuk-pay -s andy
               cf install-plugin -f do-all
-              cf do-all $ACTION {}
+              cf do-all stop {}
 
-  - name: start-all-apps
+  - name: restart-all-apps
     serial: true
     plan:
-      - task: start-all-apps
-        config:
-          <<: *all-apps-config
+      - in_parallel:
+        - put: andy-paas-space
           params:
-            CF_USERNAME: ((cf-username))
-            CF_PASSWORD: ((cf-password))
-            ACTION: start
+            command: restart
+            app_name: sqs
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: postgres
+      - in_parallel:
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: products-ui
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: demo-service
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: frontend
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: ledger
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: stubs
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: products
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: self-service
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: admin-users
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: direct-debit-frontend
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: selenium-hub
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: direct-debit-connector
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: connector
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: egress
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: public-auth
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: public-api
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: chrome
+        - put: andy-paas-space
+          params:
+            command: restart
+            app_name: card-id
 
   - name: switch-off-dev-env
     serial: true
@@ -296,7 +382,7 @@ jobs:
       - get: every-night-at-6pm
         trigger: true
       - task: stop-all-apps
-        config: *all-apps-config
+        config: *stop-all-apps-config
       - put: andy-dev-env-pipeline
         params:
           options: pause-pipeline -p andy-dev-env
@@ -489,7 +575,7 @@ jobs:
           params:
             skip_download: true
       - in_parallel:
-        - task: deploy-demmo-service
+        - task: deploy-demo-service
           file: deploy-config/tasks/deploy-to-paas.yaml
           input_mapping: { image: demo-service }
           params:

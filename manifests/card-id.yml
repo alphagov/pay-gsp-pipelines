@@ -5,13 +5,10 @@ applications:
     memory: 1G
     env:
       ADMIN_PORT: '9801'
-      TEST_CARD_DATA_LOCATION: file:///app/data/test-cards
-      WORLDPAY_DATA_LOCATION: file:///app/data/worldpay
-      DISCOVER_DATA_LOCATION: file:///app/data/discover
       RUN_APP: 'true'
       DISABLE_INTERNAL_HTTPS: 'true'
       JAVA_OPTS: -Xms512m -Xmx1G
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     routes:
-    - route: pay-cardid-((developer)).london.cloudapps.digital
+    - route: pay-card-id-((developer)).london.cloudapps.digital
     - route: card-id.apps.internal

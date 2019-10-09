@@ -16,6 +16,7 @@ applications:
       DB_PRODUCTS_HOST: postgres.apps.internal:5432
       DB_PRODUCTS_USER: products
       DB_PASSWORD: mysecretpassword
+      DB_SSL_OPTS: ssl=none
       DEMOSERVICE_SERVICE_URL: https://pay-demo-service-((developer)).london.cloudapps.digital/service
       DEMOSERVICE_PAYSTART_URL: https://pay-demo-service-((developer)).london.cloudapps.digital
       PUBLICAPI_URL: https://pay-public-api-((developer)).london.cloudapps.digital
