@@ -1,21 +1,21 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .Release.Name }}-self-service
+  name: {{ .Release.Name }}-demo-service
   namespace: {{ .Release.Namespace }}
   labels:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    app.kubernetes.io/name: {{ .Release.Name }}-self-service
+    app.kubernetes.io/name: {{ .Release.Name }}-demo-service
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   hosts:
-  - {{ include "selfService.host" . }}
+  - {{ include "stubs.demoService.host" . }}
   gateways:
   - {{ .Release.Name }}-gateway
   http:
     - route:
       - destination:
-          host: {{ .Release.Name }}-self-service
+          host: {{ .Release.Name }}-demo-service
           port:
             number: 80
