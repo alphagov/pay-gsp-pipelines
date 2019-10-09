@@ -12,7 +12,7 @@ spec:
   hosts:
   - {{ include "frontend.host" . }}
   gateways:
-  - gsp-gsp-cluster-ingress
+  - {{ .Release.Name }}-gateway
   http:
     - route:
       - destination:
