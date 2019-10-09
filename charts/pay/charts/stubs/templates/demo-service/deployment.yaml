@@ -29,10 +29,12 @@ spec:
         env:
           - name: PORT
             value: "80"
+          - name: DISABLE_SSL
+            value: "true"
           - name: PUBLICAPI_URL
-            value: http://public-api
+            value: http://{{ .Release.Name }}-public-api
           - name: PAY_API_URL
-            value: http://public-api
+            value: http://{{ .Release.Name }}-public-api
         resources: {}
         ports:
           - name: app

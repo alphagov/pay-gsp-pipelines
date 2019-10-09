@@ -1,3 +1,6 @@
+stubs:
+  enabled: false
+
 adminUsers:
   replicaCount: 1
   image:

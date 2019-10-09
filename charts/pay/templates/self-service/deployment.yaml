@@ -27,17 +27,17 @@ spec:
         - name: PORT
           value: "80"
         - name: ADMINUSERS_URL
-          value: http://adminusers/
+          value: http://{{ .Release.Name }}-adminusers/
         - name: AWS_XRAY_DAEMON_ADDRESS
           value: xray:2000
         - name: CERTS_PATH
           value: /ssl/certs
         - name: CONNECTOR_URL
-          value: http://connector/
+          value: http://{{ .Release.Name }}-connector/
         - name: COOKIE_MAX_AGE
           value: "10800000"
         - name: DIRECT_DEBIT_CONNECTOR_URL
-          value: http://directdebit-connector/
+          value: http://{{ .Release.Name }}-directdebit-connector/
         - name: EPDQ_3DS_ENABLED
           value: "true"
         - name: GOCARDLESS_LIVE_CLIENT_ID
@@ -61,15 +61,15 @@ spec:
         - name: PRODUCTS_API_TOKEN
           value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
         - name: PRODUCTS_FRIENDLY_BASE_URI
-          value: http://productsui/redirect
+          value: http://{{ .Release.Name }}-productsui/redirect
         - name: PRODUCTS_URL
-          value: http://products/
+          value: http://{{ .Release.Name }}-products/
         - name: RUN_APP
           value: "true"
         - name: SELFSERVICE_BASE
-          value: http://selfservice/
+          value: http://{{ .Release.Name }}-selfservice/
         - name: SELFSERVICE_URL
-          value: http://selfservice/
+          value: http://{{ .Release.Name }}-selfservice/
         - name: SMARTPAY_3DS_ENABLED
           value: "true"
         - name: SESSION_ENCRYPTION_KEY

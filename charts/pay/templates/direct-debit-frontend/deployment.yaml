@@ -27,11 +27,11 @@ spec:
         - name: PORT
           value: "80"
         - name: ADMINUSERS_URL
-          value: http://adminusers/
+          value: http://{{ .Release.Name }}-adminusers/
         - name: CERTS_PATH
           value: /ssl/certs
         - name: CONNECTOR_URL
-          value: http://directdebit-connector/
+          value: http://{{ .Release.Name }}-directdebit-connector/
         - name: NODE_ENV
           value: production
         - name: RUN_APP

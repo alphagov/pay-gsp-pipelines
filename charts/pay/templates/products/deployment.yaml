@@ -30,7 +30,7 @@ spec:
         - name: PORT
           value: "80"
         - name: BASE_URL
-          value: http://products/
+          value: http://{{ .Release.Name }}-products/
         - name: CERTS_PATH
           value: /ssl/certs
         - name: DB_HOST
@@ -48,15 +48,15 @@ spec:
         - name: JPA_SQL_LOG_LEVEL
           value: WARNING
         - name: PRODUCTSUI_CONFIRMATION_URL
-          value: http://productsui/payment-complete
+          value: http://{{ .Release.Name }}-productsui/payment-complete
         - name: PRODUCTSUI_PAY_URL
-          value: http://productsui/pay
+          value: http://{{ .Release.Name }}-productsui/pay
         - name: PRODUCTS_API_TOKEN
           value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
         - name: PRODUCTS_FRIENDLY_BASE_URI
-          value: http://productsui/redirect
+          value: http://{{ .Release.Name }}-productsui/redirect
         - name: PUBLICAPI_URL
-          value: http://publicapi/
+          value: http://{{ .Release.Name }}-publicapi/
         - name: RUN_APP
           value: "true"
         - name: RUN_MIGRATION

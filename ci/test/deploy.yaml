@@ -67,17 +67,6 @@ spec:
           release: true
           pre_release: false
 
-      - name: stubs-release
-        type: github-release
-        icon: unarchive
-        source:
-          owner: alphagov
-          repository: pay-gsp-pipelines
-          access_token: ((github.api-token))
-          tag_filter: "stubs-v?([^v].*)"
-          release: true
-          pre_release: false
-
       - name: cardid-src
         type: git
         icon: github-circle
@@ -280,6 +269,52 @@ spec:
         source:
           <<: *harbor_source
           repository: registry.((cluster.domain))/pay/dd-frontend
+
+      - name: endtoend-src
+        type: git
+        icon: github-circle
+        source:
+          username: re-autom8-ci
+          password: ((github.api-token))
+          uri: https://github.com/alphagov/pay-endtoend
+          branch: docker-maven-cache
+
+      - name: endtoend-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/endtoend
+
+      - name: stubs-src
+        type: git
+        icon: github-circle
+        source:
+          username: re-autom8-ci
+          password: ((github.api-token))
+          uri: https://github.com/alphagov/pay-stubs
+
+      - name: stubs-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/stubs
+
+      - name: demo-service-src
+        type: git
+        icon: github-circle
+        source:
+          username: re-autom8-ci
+          password: ((github.api-token))
+          uri: https://github.com/alphagov/pay-demo-service
+
+      - name: demo-service-image
+        type: harbor
+        icon: docker
+        source:
+          <<: *harbor_source
+          repository: registry.((cluster.domain))/pay/demo-service
 
     jobs:
       - name: build-cardid
@@ -549,6 +584,54 @@ spec:
             labels_file: labels/labels.json
             tag_as_latest: true
 
+      - name: build-endtoend
+        serial_groups: [endtoend, donatello]
+        plan:
+        - get: pay-gsp
+        - get: endtoend-src
+          trigger: true
+        - task: generate-labels
+          input_mapping: { repo: endtoend-src }
+          file: pay-gsp/tasks/generate-labels.yaml
+        - put: endtoend-image
+          params:
+            build: endtoend-src
+            tag_file: endtoend-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
+
+      - name: build-stubs
+        serial_groups: [stubs, leonardo]
+        plan:
+        - get: pay-gsp
+        - get: stubs-src
+          trigger: true
+        - task: generate-labels
+          input_mapping: { repo: stubs-src }
+          file: pay-gsp/tasks/generate-labels.yaml
+        - put: stubs-image
+          params:
+            build: stubs-src
+            tag_file: stubs-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
+
+      - name: build-demo-service
+        serial_groups: [demo-service, michaelangelo]
+        plan:
+        - get: pay-gsp
+        - get: demo-service-src
+          trigger: true
+        - task: generate-labels
+          input_mapping: { repo: demo-service-src }
+          file: pay-gsp/tasks/generate-labels.yaml
+        - put: demo-service-image
+          params:
+            build: demo-service-src
+            tag_file: demo-service-src/.git/short_ref
+            labels_file: labels/labels.json
+            tag_as_latest: true
+
       - name: pre-release
         serial_groups:
           - cardid
@@ -564,6 +647,9 @@ spec:
           - publicapi
           - dd-connector
           - dd-frontend
+          - endtoend
+          - stubs
+          - demo-service
         plan:
         - in_parallel:
             limit: 4
@@ -607,6 +693,15 @@ spec:
             - get: toolbox-image
               passed: [build-toolbox]
               trigger: true
+            - get: endtoend-image
+              passed: [build-endtoend]
+              trigger: true
+            - get: stubs-image
+              passed: [build-stubs]
+              trigger: true
+            - get: demo-service-image
+              passed: [build-demo-service]
+              trigger: true
 
         - get: pay-gsp
           trigger: true
@@ -638,11 +733,14 @@ spec:
             trigger: true
           - task: test-db-creds
             file: pay-gsp/tasks/test-db-creds.yaml
+            vars:
+              release_name: test
           - task: helm-render
             input_mapping: { chart: chart-pre }
             file: pay-gsp/tasks/helm-render.yaml
             vars:
               release_name: test
+              enable_stubs: true
           - task: deploy
             file: pay-gsp/tasks/deploy.yaml
             vars:
@@ -655,8 +753,6 @@ spec:
           passed: [deploy]
         - get: chart-pre
           passed: [deploy]
-          trigger: true
-        - get: stubs-release
           trigger: true
         - task: card-tests
           file: pay-gsp/tasks/endtoend.yaml

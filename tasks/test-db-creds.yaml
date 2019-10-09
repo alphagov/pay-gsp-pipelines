@@ -7,14 +7,17 @@ image_resource:
 outputs:
   - name: values
 
+params:
+  RELEASE_NAME: ((release_name))
+
 run:
   path: ash
   args:
     - -c
     - |
-      set -o errexit -o xtrace
+      set -o errexit -o nounset -o xtrace
       cat > values/db.yaml <<EOF
       db:
-        host: stubs-postgresql
+        host: ${RELEASE_NAME}-postgresql
         password: mysecretpassword
       EOF

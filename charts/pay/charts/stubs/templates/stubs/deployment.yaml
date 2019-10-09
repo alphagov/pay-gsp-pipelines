@@ -38,25 +38,25 @@ spec:
           - name: WORLDPAY_EXPECTED_PASSWORD
             value: worldpay-password
           - name: CONNECTOR_SANDBOX_NOTIFICATION_URL
-            value: http://connector/v1/api/notifications/sandbox
+            value: http://{{ .Release.Name }}-connector/v1/api/notifications/sandbox
           - name: CONNECTOR_WORLDPAY_NOTIFICATION_URL
-            value: http://connector/v1/api/notifications/worldpay 
+            value: http://{{ .Release.Name }}-connector/v1/api/notifications/worldpay
           - name: CONNECTOR_SMARTPAY_NOTIFICATION_URL
-            value: http://connector/v1/api/notifications/smartpay
+            value: http://{{ .Release.Name }}-connector/v1/api/notifications/smartpay
           - name: CONNECTOR_EPDQ_NOTIFICATION_URL
-            value: http://connector/v1/api/notifications/epdq
+            value: http://{{ .Release.Name }}-connector/v1/api/notifications/epdq
           - name: CONNECTOR_DIRECT_DEBIT_SANDBOX_NOTIFICATION_URL
-            value: http://directdebit-connector/v1/webhooks/sandbox
+            value: http://{{ .Release.Name }}-directdebit-connector/v1/webhooks/sandbox
           - name: CONNECTOR_DIRECT_DEBIT_GOCARDLESS_NOTIFICATION_URL
-            value: http://directdebit-connector/v1/webhooks/gocardless
+            value: http://{{ .Release.Name }}-directdebit-connector/v1/webhooks/gocardless
           - name: CONNECTOR_DIRECT_DEBIT_GOCARDLESS_WEBHOOK_SECRET
             value: supersecret
           - name: EPDQ_SHA_OUT_PASSPHRASE
             value: mysecretpassphrase
           - name: EXTERNAL_STUBS_URL
-            value: http://stubs/
+            value: http://{{ .Release.Name }}-stubs
           - name: FRONTEND_URL
-            value: http://frontend
+            value: http://{{ .Release.Name }}-frontend
         resources: {}
         ports:
           - name: app

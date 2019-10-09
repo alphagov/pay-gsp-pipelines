@@ -30,7 +30,7 @@ spec:
         - name: PORT
           value: "80"
         - name: ADMINUSERS_URL
-          value: http://adminusers/
+          value: http://{{ .Release.Name }}-adminusers/
         - name: AUTH_READ_TIMEOUT_SECONDS
           value: "1"
         - name: CERTS_PATH
@@ -44,13 +44,13 @@ spec:
         - name: DB_SSL_OPTION
           value: "ssl=none"
         - name: FRONTEND_URL
-          value: http://directdebit-frontend/
+          value: http://{{ .Release.Name }}-directdebit-frontend/
         - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ACCESS_TOKEN
           value: supersecret
         - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_ENVIRONMENT
           value: sandbox
         - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_URL
-          value: http://stubs/stub/gocardless/
+          value: http://{{ .Release.Name }}-stubs/stub/gocardless/
         - name: GDS_DIRECTDEBIT_CONNECTOR_GOCARDLESS_WEBHOOK_SECRET
           value: supersecret
         - name: GOCARDLESS_LIVE_CLIENT_ID
