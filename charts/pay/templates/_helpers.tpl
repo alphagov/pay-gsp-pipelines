@@ -39,3 +39,14 @@ Define self-service host
 {{- define "selfService.host" -}}
 {{- default (printf "%s-self-service.%s" .Release.Name .Values.global.cluster.domain) .Values.selfService.host -}}
 {{- end -}}
+
+{{/*
+Define list of hosts
+*/}}
+{{- define "publicHosts" -}}
+- {{- include "frontend.host" . -}}
+- {{- include "directDebit.frontend.host" . -}}
+- {{- include "products.ui.host" . -}}
+- {{- include "public.api.host" . -}}
+- {{- include "selfService.host" . -}}
+{{- end -}}
