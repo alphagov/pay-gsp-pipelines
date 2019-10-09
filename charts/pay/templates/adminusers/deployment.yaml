@@ -44,7 +44,7 @@ spec:
         - name: FORGOTTEN_PASSWORD_EXPIRY_MINUTES
           value: "90"
         - name: FRONTEND_URL
-          value: http://frontend/
+          value: http://{{ .Release.Name }}-frontend/
         - name: JAVA_OPTS
           value: -Xms128m -Xmx1G
         - name: JPA_LOG_LEVEL
@@ -58,7 +58,7 @@ spec:
         - name: NOTIFY_API_KEY
           value: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
         - name: NOTIFY_BASE_URL
-          value: http://stubs/notify
+          value: http://{{ .Release.Name }}-stubs/notify
         - name: NOTIFY_DIRECT_DEBIT_API_KEY
           value: api_key-pay-notify-service-id-pay-notify-secret-needs-to-be-32-chars-fsghdngfhmhfkrgsfs
         - name: NOTIFY_FORGOTTEN_PASSWORD_EMAIL_TEMPLATE_ID
@@ -88,7 +88,7 @@ spec:
         - name: RUN_MIGRATION
           value: "true"
         - name: SELFSERVICE_URL
-          value: http://selfservice/
+          value: http://{{ .Release.Name }}-selfservice/
         resources: {}
         ports:
           - name: app

@@ -27,7 +27,7 @@ spec:
         - name: PORT
           value: "80"
         - name: ADMINUSERS_URL
-          value: http://adminusers/
+          value: http://{{ .Release.Name }}-adminusers/
         - name: CERTS_PATH
           value: /ssl/certs
         - name: COOKIE_MAX_AGE
@@ -37,11 +37,11 @@ spec:
         - name: PRODUCTS_API_TOKEN
           value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
         - name: PRODUCTS_URL
-          value: http://products/
+          value: http://{{ .Release.Name }}-products/
         - name: RUN_APP
           value: "true"
         - name: SELFSERVICE_TRANSACTIONS_URL
-          value: http://selfservice/transactions
+          value: http://{{ .Release.Name }}-selfservice/transactions
         - name: SESSION_ENCRYPTION_KEY
           value: asdjhbwefbo23r23rbfik2roiwhefwbqw
         resources: {}

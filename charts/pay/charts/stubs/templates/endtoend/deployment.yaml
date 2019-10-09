@@ -52,19 +52,19 @@ spec:
           - name: DEMOSERVICE_PAYSTART_URL
             value: http://{{ .Release.Name }}-demo-service
           - name: PUBLICAPI_URL
-            value: http://test-public-api
+            value: http://{{ .Release.Name }}-public-api
           - name: PUBLIC_AUTH_URL
-            value: http://test-public-auth
+            value: http://{{ .Release.Name }}-public-auth
           - name: TEST_GATEWAY_ACCOUNT_ID
             value: "111"
           - name: CONNECTOR_URL
-            value: http://test-connector
+            value: http://{{ .Release.Name }}-connector
           - name: DIRECT_DEBIT_CONNECTOR_URL
-            value: http://test-direct-debit-connector
+            value: http://{{ .Release.Name }}-direct-debit-connector
           - name: ADMINUSERS_URL
-            value: http://test-adminusers
+            value: http://{{ .Release.Name }}-adminusers
           - name: SELFSERVICE_URL
-            value: http://test-self-service
+            value: http://{{ .Release.Name }}-self-service
           - name: SELFSERVICE_USERNAME
             value: alice.111@mail.fake
           - name: SELFSERVICE_PASSWORD
@@ -76,15 +76,15 @@ spec:
           - name: DB_SETUP_FOR_SMOKE
             value: "true"
           - name: FRONTEND_URL
-            value: http://test-frontend
+            value: http://{{ .Release.Name }}-frontend
           - name: ADMIN_USERS_URL
-            value: http://test-adminusers
+            value: http://{{ .Release.Name }}-adminusers
           - name: NOTIFICATIONS_URL
-            value: http://test-notifications
+            value: http://{{ .Release.Name }}-notifications
           - name: PRODUCTS_URL
-            value: http://test-products
+            value: http://{{ .Release.Name }}-products
           - name: PRODUCTS_UI_URL
-            value: http://test-products-ui
+            value: http://{{ .Release.Name }}-products-ui
           - name: PRODUCTS_API_TOKEN
             value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
           - name: HTTP_ZAP_ENABLED

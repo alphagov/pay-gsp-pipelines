@@ -1,0 +1,3 @@
+dependencies:
+  - name: stubs
+    condition: stubs.enabled

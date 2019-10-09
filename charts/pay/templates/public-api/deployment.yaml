@@ -31,15 +31,15 @@ spec:
         - name: CERTS_PATH
           value: /ssl/certs
         - name: CONNECTOR_DD_URL
-          value: http://directdebit-connector/
+          value: http://{{ .Release.Name }}-directdebit-connector/
         - name: CONNECTOR_URL
-          value: http://connector/
+          value: http://{{ .Release.Name }}-connector/
         - name: JAVA_OPTS
           value: -Xms128m -Xmx1G
         - name: PUBLICAPI_BASE
-          value: http://publicapi/
+          value: http://{{ .Release.Name }}-publicapi/
         - name: PUBLIC_AUTH_URL
-          value: http://publicauth/v1/api/auth
+          value: http://{{ .Release.Name }}-publicauth/v1/api/auth
         - name: TOKEN_API_HMAC_SECRET
           value: qwer9yuhgf
         resources: {}

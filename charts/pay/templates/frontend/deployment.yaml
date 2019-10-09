@@ -31,21 +31,21 @@ spec:
           - name: COOKIE_MAX_AGE
             value: "5400000"
           - name: CONNECTOR_TOKEN_URL
-            value: "http://connector/v1/frontend/tokens/{chargeTokenId}"
+            value: "http://{{ .Release.Name }}-connector/v1/frontend/tokens/{chargeTokenId}"
           - name: CONNECTOR_URL
-            value: "http://connector/v1/frontend/charges/{chargeId}"
+            value: "http://{{ .Release.Name }}-connector/v1/frontend/charges/{chargeId}"
           - name: CONNECTOR_HOST
-            value: "http://connector"
+            value: "http://{{ .Release.Name }}-connector"
           - name: ANALYTICS_TRACKING_ID
             value: "testing-123"
           - name: CARDID_HOST
-            value: "http://cardid"
+            value: "http://{{ .Release.Name }}-cardid"
           - name: NODE_WORKER_COUNT
             value: "1"
           - name: FRONTEND_URL
-            value: "http://frontend/"
+            value: "http://{{ .Release.Name }}-frontend/"
           - name: ADMINUSERS_URL
-            value: "http://adminusers"
+            value: "http://{{ .Release.Name }}-adminusers"
           - name: AWS_XRAY_DAEMON_ADDRESS
             value: "xray:2000"
           - name: NODE_WORKER_COUNT
