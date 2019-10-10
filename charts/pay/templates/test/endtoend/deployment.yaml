@@ -99,7 +99,7 @@ spec:
           - name: WEB_DRIVER
             value: CHROME_REMOTE
           - name: SELENIUM_HUB_URL
-            value: http://{{ .Release.Name }}-selenium-hub:4444/wd/hub
+            value: https://pay-selenium-hub-andy.london.cloudapps.digital/wd/hub
           - name: CHROME_DRIVER_PATH
             value: /usr/bin/chromedriver
           - name: CHROMEDRIVER.PATH
