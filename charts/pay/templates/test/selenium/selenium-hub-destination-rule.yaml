@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  host: "gsp-grafana.gsp-system.svc.cluster.local"
   host: {{ .Release.Name }}-selenium-hub.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:
     tls:
