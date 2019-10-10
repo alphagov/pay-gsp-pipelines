@@ -32,4 +32,8 @@ spec:
       - podSelector:
           matchLabels:
             app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/name: public-api
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/instance: {{ .Release.Name }}
             app.kubernetes.io/name: toolbox
