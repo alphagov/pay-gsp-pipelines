@@ -1,3 +1,4 @@
+{{- if .Values.test.enabled }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -37,3 +38,4 @@ spec:
         configMap:
           name: {{ .Release.Name }}-postgresql-initdb
       restartPolicy: Always
+{{- end }}
