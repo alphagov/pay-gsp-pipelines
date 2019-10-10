@@ -1,9 +1,10 @@
+{{- if .Values.test.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-stubs
+  name: {{ .Release.Name }}-demo-service
   labels:
-    app.kubernetes.io/name: stubs
+    app.kubernetes.io/name: demo-service
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
@@ -17,5 +18,6 @@ spec:
     port: 8081
     targetPort: admin
   selector:
-    app.kubernetes.io/name: stubs
+    app.kubernetes.io/name: demo-service
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

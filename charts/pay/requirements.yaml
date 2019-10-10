@@ -1,3 +1,5 @@
 dependencies:
-  - name: stubs
-    condition: stubs.enabled
+  - name: selenium
+    version: 1.0.8
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: test.enabled

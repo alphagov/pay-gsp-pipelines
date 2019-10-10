@@ -1,21 +1,20 @@
+{{- if .Values.test.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-demo-service
+  name: {{ .Release.Name }}-postgresql
   labels:
-    app.kubernetes.io/name: demo-service
+    app.kubernetes.io/name: postgresql
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   type: ClusterIP
   ports:
-  - name: http-app
-    port: 80
-    targetPort: app
-  - name: http-admin
-    port: 8081
-    targetPort: admin
+  - name: tcp-postgres
+    port: 5432
+    targetPort: postgres
   selector:
-    app.kubernetes.io/name: demo-service
+    app.kubernetes.io/name: postgresql
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

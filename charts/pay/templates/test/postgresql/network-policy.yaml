@@ -1,20 +1,27 @@
+{{- if .Values.test.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-allow-all
+  name: {{ .Release.Name }}-allow-all-postgres
   namespace: {{ .Release.Namespace }}
   labels:
+    app.kubernetes.io/name: postgresql
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      release: {{ .Release.Name }}
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/instance: {{ .Release.Name }}
   policyTypes:
   - Ingress
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            release: {{ .Release.Name }}
+            requires: db
+      ports:
+      - protocol: TCP
+        port: 5432
+{{- end }}
