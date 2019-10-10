@@ -37,9 +37,9 @@ spec:
         - name: JAVA_OPTS
           value: -Xms128m -Xmx1G
         - name: PUBLICAPI_BASE
-          value: http://{{ .Release.Name }}-publicapi/
+          value: https://{{ include "public.api.host" . }}
         - name: PUBLIC_AUTH_URL
-          value: http://{{ .Release.Name }}-publicauth/v1/api/auth
+          value: http://{{ .Release.Name }}-public-auth/v1/api/auth
         - name: TOKEN_API_HMAC_SECRET
           value: qwer9yuhgf
         resources: {}
