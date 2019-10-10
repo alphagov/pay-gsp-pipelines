@@ -41,7 +41,14 @@ Define self-service host
 {{- end -}}
 
 {{/*
-Define list of hosts
+Define demo-service host
+*/}}
+{{- define "demoService.host" -}}
+{{- printf "%s-demo-service.%s" .Release.Name .Values.global.cluster.domain -}}
+{{- end -}}
+
+{{/*
+Define list of public hosts
 */}}
 {{- define "publicHosts" -}}
 - {{ include "frontend.host" . }}
@@ -49,4 +56,7 @@ Define list of hosts
 - {{ include "products.ui.host" . }}
 - {{ include "public.api.host" . }}
 - {{ include "selfService.host" . }}
+{{- if .Values.test.enabled }}
+- {{ include "demoService.host" . }}
+{{- end }}
 {{- end -}}

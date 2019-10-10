@@ -1,3 +1,4 @@
+{{- if .Values.test.enabled }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -27,6 +28,30 @@ spec:
         image: "{{ .Values.endtoend.image.repository }}:{{ .Values.endtoend.image.tag }}"
         imagePullPolicy: {{ .Values.endtoend.image.pullPolicy }}
         env:
+          - name: DEMOSERVICE_PAYSTART_URL
+            value: {{ include "demoService.host" . }}
+          - name: FRONTEND_URL
+            value: {{ include "frontend.host" . }}
+          - name: PRODUCTS_UI_URL
+            value: {{ include "products.ui.host" . }}
+          - name: PUBLICAPI_URL
+            value: {{ include "public.api.host" . }}
+          - name: SELFSERVICE_URL
+            value: {{ include "selfService.host" . }}
+          - name: PUBLIC_AUTH_URL
+            value: http://{{ .Release.Name }}-public-auth
+          - name: ADMIN_USERS_URL
+            value: http://{{ .Release.Name }}-adminusers
+          - name: NOTIFICATIONS_URL
+            value: http://{{ .Release.Name }}-notifications
+          - name: PRODUCTS_URL
+            value: http://{{ .Release.Name }}-products
+          - name: CONNECTOR_URL
+            value: http://{{ .Release.Name }}-connector
+          - name: DIRECT_DEBIT_CONNECTOR_URL
+            value: http://{{ .Release.Name }}-direct-debit-connector
+          - name: ADMINUSERS_URL
+            value: http://{{ .Release.Name }}-adminusers
           - name: DB_CONNECTOR_HOST
             value: {{ .Release.Name }}-postgresql
           - name: DB_CONNECTOR_USER
@@ -49,22 +74,8 @@ spec:
             value: products
           - name: DB_PASSWORD
             value: mysecretpassword
-          - name: DEMOSERVICE_PAYSTART_URL
-            value: http://{{ .Release.Name }}-demo-service
-          - name: PUBLICAPI_URL
-            value: http://{{ .Release.Name }}-public-api
-          - name: PUBLIC_AUTH_URL
-            value: http://{{ .Release.Name }}-public-auth
           - name: TEST_GATEWAY_ACCOUNT_ID
             value: "111"
-          - name: CONNECTOR_URL
-            value: http://{{ .Release.Name }}-connector
-          - name: DIRECT_DEBIT_CONNECTOR_URL
-            value: http://{{ .Release.Name }}-direct-debit-connector
-          - name: ADMINUSERS_URL
-            value: http://{{ .Release.Name }}-adminusers
-          - name: SELFSERVICE_URL
-            value: http://{{ .Release.Name }}-self-service
           - name: SELFSERVICE_USERNAME
             value: alice.111@mail.fake
           - name: SELFSERVICE_PASSWORD
@@ -75,16 +86,6 @@ spec:
             value: http://{{ .Release.Name }}-stubs
           - name: DB_SETUP_FOR_SMOKE
             value: "true"
-          - name: FRONTEND_URL
-            value: http://{{ .Release.Name }}-frontend
-          - name: ADMIN_USERS_URL
-            value: http://{{ .Release.Name }}-adminusers
-          - name: NOTIFICATIONS_URL
-            value: http://{{ .Release.Name }}-notifications
-          - name: PRODUCTS_URL
-            value: http://{{ .Release.Name }}-products
-          - name: PRODUCTS_UI_URL
-            value: http://{{ .Release.Name }}-products-ui
           - name: PRODUCTS_API_TOKEN
             value: g0nBA5lNzfUalQjk4ZBDy70AikNshxz2G70dA6lg
           - name: HTTP_ZAP_ENABLED
@@ -109,3 +110,4 @@ spec:
             value: "-o"
         resources: {}
       restartPolicy: Always
+{{- end }}

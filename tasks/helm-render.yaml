@@ -54,7 +54,7 @@ run:
       --set "global.version=$(cat chart/version)" \
       --set "global.cluster.name=${CLUSTER_NAME}" \
       --set "global.cluster.domain=${CLUSTER_DOMAIN}" \
-      --set "stubs.enabled=${ENABLE_STUBS:-false}" \
+      --set "test.enabled=${ENABLE_STUBS:-false}" \
       --values extra_values.yaml \
       --output-dir "./manifests/" \
       ./chart/*.tgz

@@ -15,7 +15,6 @@ spec:
   servers:
   - hosts:
       {{- include "publicHosts" . | nindent 6 }}
-      {{- include "stubs.publicHosts" . | nindent 6 }}
     port:
       name: https
       number: 443
@@ -27,7 +26,6 @@ spec:
       serverCertificate: sds
   - hosts:
       {{- include "publicHosts" . | nindent 6 }}
-      {{- include "stubs.publicHosts" . | nindent 6 }}
     port:
       number: 80
       name: http
