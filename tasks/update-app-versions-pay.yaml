@@ -88,19 +88,18 @@ run:
           repository: "$(repo selfservice-image)"
           tag: "$(ref selfservice-image)"
 
+      endtoend:
+        image:
+          repository: "$(repo endtoend-image)"
+          tag: "$(ref endtoend-image)"
+      demoService:
+        image:
+          repository: "$(repo demo-service-image)"
+          tag: "$(ref demo-service-image)"
       stubs:
-        endtoend:
-          image:
-            repository: "$(repo endtoend-image)"
-            tag: "$(ref endtoend-image)"
-        demoService:
-          image:
-            repository: "$(repo demo-service-image)"
-            tag: "$(ref demo-service-image)"
-        stubs:
-          image:
-            repository: "$(repo stubs-image)"
-            tag: "$(ref stubs-image)"
+        image:
+          repository: "$(repo stubs-image)"
+          tag: "$(ref stubs-image)"
       EOF
 
       spruce merge pay-gsp/charts/pay/values.yaml new_values.yaml > tmp

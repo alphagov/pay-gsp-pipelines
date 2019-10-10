@@ -1,3 +1,4 @@
+{{- if .Values.test.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -37,3 +38,4 @@ data:
     CREATE USER ledger WITH password 'mysecretpassword';
     CREATE DATABASE ledger WITH owner=ledger TEMPLATE postgres;
     GRANT ALL PRIVILEGES ON DATABASE ledger TO ledger;
+{{- end }}
