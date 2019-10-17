@@ -392,6 +392,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: admin-users
         trigger: true
         params:
@@ -406,6 +407,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: card-id
         trigger: true
         params:
@@ -420,6 +422,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: connector
         trigger: true
         params:
@@ -434,6 +437,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: direct-debit-connector
         trigger: true
         params:
@@ -448,6 +452,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: direct-debit-frontend
         trigger: true
         params:
@@ -462,6 +467,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: frontend
         trigger: true
         params:
@@ -476,6 +482,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: ledger
         trigger: true
         params:
@@ -490,6 +497,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: products-ui
         trigger: true
         params:
@@ -504,6 +512,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: products
         trigger: true
         params:
@@ -518,6 +527,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: public-api
         trigger: true
         params:
@@ -532,6 +542,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: public-auth
         trigger: true
         params:
@@ -546,6 +557,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - get: self-service
         trigger: true
         params:
@@ -561,6 +573,7 @@ jobs:
     plan:
       - get: deploy-config
         trigger: true
+        passed: [deploy-tools]
       - in_parallel:
         - get: demo-service
           trigger: true

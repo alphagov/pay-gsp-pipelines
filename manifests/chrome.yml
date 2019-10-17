@@ -2,7 +2,7 @@
 applications:
   - name: chrome
     health-check-type: process
-    memory: 1G
+    memory: 2G
     env:
       HUB_HOST: selenium-hub.apps.internal
       HUB_PORT: 4444

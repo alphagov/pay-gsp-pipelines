@@ -6,7 +6,7 @@ applications:
     env:
       ADMIN_PORT: '9301'
       DB_HOST: postgres.apps.internal
-      DB_SSL_OPTION: ssl=false
+      DB_SSL_OPTION: ssl=none
       DB_USER: connector
       DB_PASSWORD: mysecretpassword
       FRONTEND_URL: https://pay-frontend-((developer)).london.cloudapps.digital
